@@ -23,6 +23,8 @@ Déploiement : push sur `main` → workflow `.github/workflows/deploy.yml` → G
 
 ## Données (source : PDF officiel du programme)
 
+Sources conservées dans `sources/` : `programme.pdf` (PDF officiel 24 pages, téléchargé depuis https://cdn.prod.website-files.com/632afd0e6e467cd2f4ef953f/6a354222a5d8c3d33248c54e_PDJ26%20-%20PROGRAMME.pdf), `programme.txt` (texte extrait par pdftotext — attention : les grilles horaires samedi/dimanche, pages 6–7, sont en paysage et leur texte est brouillé, croiser avec le rendu visuel du PDF), `palette.md` (analyse de l'identité visuelle du programme papier, base des design tokens de `index.css`).
+
 - `src/data/events.json` — 66 événements. Schéma : `{id, title, artist, day: "ven"|"sam"|"dim", start: "HH:MM", end, venue, category, subtype, description}`. 9 catégories : concert, bal, spectacle, conference, atelier, imaginarium, balade, radio, famille.
 - `src/data/venues.json` — les 23 points du plan (`{num, name, group}`), groupes : programmation, accueil, bienetre, vente.
 - `public/map.png` — page 3 du PDF rendue en PNG 200 dpi (`pdftoppm`).
