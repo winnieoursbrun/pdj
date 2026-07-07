@@ -110,7 +110,7 @@ export default function App() {
             <h2>Installer l'app</h2>
             <ol>
               <li>
-                Touche le bouton <strong>Partager</strong> de Safari
+                Touche le bouton <strong>Partager</strong>
                 <svg viewBox="0 0 24 24" aria-hidden="true" className="ios-share">
                   <path
                     d="M12 3v11m0-11-3.5 3.5M12 3l3.5 3.5M5.5 10H5a1.5 1.5 0 0 0-1.5 1.5v8A1.5 1.5 0 0 0 5 21h14a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 19 10h-.5"
