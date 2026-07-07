@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useFavorites } from './hooks/useFavorites'
+import { useInstallPrompt } from './hooks/useInstallPrompt'
 import { MapTab } from './tabs/MapTab'
 import { ProgramTab } from './tabs/ProgramTab'
 import { TimelineTab } from './tabs/TimelineTab'
@@ -46,16 +47,95 @@ function TabIcon({ tab }: { tab: Tab }) {
 
 export default function App() {
   const [tab, setTab] = useState<Tab>('program')
+  const [iosHelpOpen, setIosHelpOpen] = useState(false)
   const { favorites, toggle } = useFavorites()
+  const install = useInstallPrompt()
+  const showInstall = install.canPrompt || install.needsIosHelp
 
   return (
     <div className="app">
       <header className="app-header">
-        <h1 className="wordmark">
-          Les pluies <span className="wordmark-accent">de juillet</span>
-        </h1>
-        <p className="app-sub">17 – 19 juillet 2026 · Champrepus</p>
+        <div className="app-header-text">
+          <h1 className="wordmark">
+            Les pluies <span className="wordmark-accent">de juillet</span>
+          </h1>
+          <p className="app-sub">17 – 19 juillet 2026 · Champrepus</p>
+        </div>
+        {showInstall && (
+          <button
+            type="button"
+            className="install-btn"
+            onClick={() => {
+              if (install.canPrompt) {
+                void install.promptInstall()
+              } else {
+                setIosHelpOpen(true)
+              }
+            }}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 3v10m0 0 4-4m-4 4-4-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M4.5 16v3.5h15V16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            Installer
+          </button>
+        )}
       </header>
+
+      {iosHelpOpen && (
+        <div
+          className="ios-sheet-backdrop"
+          onClick={() => setIosHelpOpen(false)}
+        >
+          <div
+            className="ios-sheet"
+            role="dialog"
+            aria-label="Installer l'application"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2>Installer l'app</h2>
+            <ol>
+              <li>
+                Touche le bouton <strong>Partager</strong> de Safari
+                <svg viewBox="0 0 24 24" aria-hidden="true" className="ios-share">
+                  <path
+                    d="M12 3v11m0-11-3.5 3.5M12 3l3.5 3.5M5.5 10H5a1.5 1.5 0 0 0-1.5 1.5v8A1.5 1.5 0 0 0 5 21h14a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 19 10h-.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </li>
+              <li>
+                Choisis <strong>« Sur l'écran d'accueil »</strong>
+              </li>
+            </ol>
+            <button
+              type="button"
+              className="ios-sheet-close"
+              onClick={() => setIosHelpOpen(false)}
+            >
+              Compris
+            </button>
+          </div>
+        </div>
+      )}
 
       <main className="app-main">
         {tab === 'map' && <MapTab />}
