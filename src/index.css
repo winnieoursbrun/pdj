@@ -1,0 +1,705 @@
+@import '@fontsource-variable/bricolage-grotesque';
+
+/* ---------- Palette du programme papier : fanzine DIY, aplats francs,
+   contours noirs épais, ombres « sticker » décalées ---------- */
+:root {
+  --paper: #f2ede2;
+  --card: #fbf8f0;
+  --ink: #141414;
+  --line: #141414;
+  --muted: #6b6455;
+  --pink: #f49bc1;
+  --yellow: #ffd02e;
+  --sky: #7ec8e6;
+  --green: #5fb763;
+  --green-light: #7cc576;
+  --peri: #5f6fbf;
+  --poppy: #e8432e;
+  --violet: #9b6fbf;
+  --on-dark: #fbf8f0;
+  --sticker: 3px 3px 0 var(--line);
+  --sticker-sm: 2px 2px 0 var(--line);
+  --radius: 14px;
+  --display: 'Bricolage Grotesque Variable', system-ui, sans-serif;
+  --body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #1a1920;
+    --card: #26242e;
+    --ink: #f2ede2;
+    --line: #0d0c10;
+    --muted: #a89f8d;
+    --sticker: 3px 3px 0 var(--line);
+    --sticker-sm: 2px 2px 0 var(--line);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 3px solid var(--peri);
+  outline-offset: 2px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--display);
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+/* ---------- Shell ---------- */
+.app {
+  max-width: 520px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  padding: 18px 16px 10px;
+}
+
+.wordmark {
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--pink);
+  text-shadow:
+    -1.5px -1.5px 0 var(--line),
+    1.5px -1.5px 0 var(--line),
+    -1.5px 1.5px 0 var(--line),
+    1.5px 1.5px 0 var(--line),
+    4px 4px 0 var(--line);
+}
+
+.wordmark-accent {
+  color: var(--yellow);
+}
+
+.app-sub {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.app-main {
+  flex: 1;
+  padding: 8px 16px calc(86px + env(safe-area-inset-bottom));
+}
+
+/* ---------- Tab bar ---------- */
+.tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 520px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  background: var(--card);
+  border-top: 2.5px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 10;
+}
+
+.tabbar-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 4px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.tabbar-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.tabbar-btn.is-active {
+  color: var(--ink);
+}
+
+.tabbar-btn.is-active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 44px;
+  height: 4px;
+  background: var(--yellow);
+  border: 1.5px solid var(--line);
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+}
+
+.tabbar-badge {
+  position: absolute;
+  top: 4px;
+  right: calc(50% - 26px);
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--pink);
+  color: #141414;
+  border: 1.5px solid var(--line);
+  font-size: 0.68rem;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+
+/* ---------- Couleurs par catégorie ---------- */
+.cat-concert {
+  --cat: var(--pink);
+  --cat-ink: #141414;
+}
+.cat-spectacle {
+  --cat: var(--poppy);
+  --cat-ink: var(--on-dark);
+}
+.cat-conference {
+  --cat: var(--peri);
+  --cat-ink: var(--on-dark);
+}
+.cat-atelier {
+  --cat: var(--green);
+  --cat-ink: #141414;
+}
+.cat-bal {
+  --cat: var(--yellow);
+  --cat-ink: #141414;
+}
+.cat-famille {
+  --cat: var(--sky);
+  --cat-ink: #141414;
+}
+.cat-balade {
+  --cat: var(--green-light);
+  --cat-ink: #141414;
+}
+.cat-radio {
+  --cat: #141414;
+  --cat-ink: var(--on-dark);
+}
+.cat-imaginarium {
+  --cat: var(--violet);
+  --cat-ink: var(--on-dark);
+}
+
+@media (prefers-color-scheme: dark) {
+  .cat-radio {
+    --cat: #000;
+  }
+}
+
+/* ---------- Sélecteur de jour ---------- */
+.day-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin: 6px 0 12px;
+}
+
+.day-btn {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 0;
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  font-family: var(--display);
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.day-btn .day-date {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.day-btn.is-active {
+  color: #141414;
+  box-shadow: var(--sticker);
+  transform: translate(-1px, -1px);
+}
+
+.day-btn.day-ven.is-active {
+  background: var(--pink);
+}
+.day-btn.day-sam.is-active {
+  background: var(--yellow);
+}
+.day-btn.day-dim.is-active {
+  background: var(--sky);
+}
+
+/* ---------- Chips de catégorie ---------- */
+.chip-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 16px 10px;
+  margin: 0 -16px;
+  scrollbar-width: none;
+}
+
+.chip-row::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--card);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.chip.is-active {
+  background: var(--cat, var(--ink));
+  color: var(--cat-ink, var(--paper));
+  box-shadow: var(--sticker-sm);
+}
+
+.chip-concert {
+  --cat: var(--pink);
+  --cat-ink: #141414;
+}
+.chip-spectacle {
+  --cat: var(--poppy);
+  --cat-ink: var(--on-dark);
+}
+.chip-conference {
+  --cat: var(--peri);
+  --cat-ink: var(--on-dark);
+}
+.chip-atelier {
+  --cat: var(--green);
+  --cat-ink: #141414;
+}
+.chip-bal {
+  --cat: var(--yellow);
+  --cat-ink: #141414;
+}
+.chip-famille {
+  --cat: var(--sky);
+  --cat-ink: #141414;
+}
+.chip-balade {
+  --cat: var(--green-light);
+  --cat-ink: #141414;
+}
+.chip-radio {
+  --cat: #141414;
+  --cat-ink: var(--on-dark);
+}
+.chip-imaginarium {
+  --cat: var(--violet);
+  --cat-ink: var(--on-dark);
+}
+
+.list-count {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 2px 0 10px;
+}
+
+/* ---------- Cartes événement ---------- */
+.card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.card {
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--sticker);
+  padding: 12px 14px 13px;
+}
+
+.card-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.pill-time {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.pill-cat {
+  background: var(--cat);
+  color: var(--cat-ink);
+  text-transform: lowercase;
+}
+
+.card-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.card-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title {
+  font-size: 1.12rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.card-artist {
+  font-size: 0.86rem;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.card-venue {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 600;
+  margin-top: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card-more {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: var(--ink);
+}
+
+.card-desc {
+  margin-top: 8px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* ---------- Parapluie favori ---------- */
+.umbrella {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  background: var(--card);
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.umbrella svg {
+  width: 24px;
+  height: 24px;
+}
+
+.umbrella .canopy {
+  fill: currentColor;
+}
+
+.umbrella .stem {
+  stroke: currentColor;
+}
+
+.umbrella.is-open {
+  background: var(--yellow);
+  color: #141414;
+  box-shadow: var(--sticker-sm);
+  transform: translate(-1px, -1px) rotate(-8deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .umbrella {
+    transition: none;
+  }
+  .umbrella.is-open {
+    transform: none;
+  }
+}
+
+/* ---------- Ma timeline ---------- */
+.tl-day {
+  margin-bottom: 22px;
+}
+
+.tl-day-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 4px 12px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  box-shadow: var(--sticker-sm);
+  margin-bottom: 14px;
+  color: #141414;
+}
+
+.tl-day-title.day-ven {
+  background: var(--pink);
+}
+.tl-day-title.day-sam {
+  background: var(--yellow);
+}
+.tl-day-title.day-dim {
+  background: var(--sky);
+}
+
+.tl-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 10px;
+  border-left: 3px dashed var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tl-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--sticker);
+  padding: 12px 14px;
+  margin-left: 12px;
+}
+
+.tl-dot {
+  position: absolute;
+  left: -25px;
+  top: 18px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--cat);
+  border: 2px solid var(--line);
+}
+
+.tl-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.tl-content .pill-time {
+  margin-bottom: 6px;
+}
+
+.timeline-empty {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--muted);
+}
+
+.timeline-empty .empty-umbrella {
+  width: 72px;
+  height: 72px;
+  fill: var(--pink);
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.timeline-empty h2 {
+  color: var(--ink);
+  font-size: 1.25rem;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.timeline-empty p {
+  font-size: 0.9rem;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+/* ---------- Carte du site ---------- */
+.map-frame {
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--sticker);
+  overflow: hidden;
+  background: #fff;
+}
+
+.map-wrapper {
+  width: 100% !important;
+  height: 54dvh !important;
+}
+
+.map-content img {
+  width: 100%;
+  height: auto;
+  display: block;
+  user-select: none;
+}
+
+.map-hint {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: center;
+  padding: 6px 0;
+  border-top: 1.5px solid var(--line);
+  background: var(--card);
+}
+
+.legend {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.legend-group {
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--sticker-sm);
+  overflow: hidden;
+}
+
+.legend-group summary {
+  font-family: var(--display);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  padding: 11px 14px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-group summary::-webkit-details-marker {
+  display: none;
+}
+
+.legend-group summary::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-programmation summary::before {
+  background: var(--pink);
+}
+.legend-accueil summary::before {
+  background: var(--sky);
+}
+.legend-bienetre summary::before {
+  background: var(--green);
+}
+.legend-vente summary::before {
+  background: var(--yellow);
+}
+
+.legend-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.legend-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-num {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: var(--paper);
+  font-size: 0.72rem;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
