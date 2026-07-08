@@ -193,4 +193,48 @@ describe('useReminders scheduling', () => {
     })
     expect(MockNotification.instances).toHaveLength(0)
   })
+
+  it('la transition de statut vers "enabled" via enable() déclenche la programmation', async () => {
+    MockNotification.permission = 'default'
+    localStorage.removeItem('pdj26-reminders-enabled')
+    MockNotification.requestPermission.mockResolvedValue('granted' as NotificationPermission)
+    vi.setSystemTime(new Date(2026, 6, 18, 20, 44))
+
+    const { result } = renderHook(({ events }) => useReminders(events), {
+      initialProps: { events: [makeEvent()] },
+    })
+    expect(result.current.status).toBe('default')
+
+    await act(async () => {
+      result.current.enable()
+    })
+
+    expect(result.current.status).toBe('enabled')
+    expect(MockNotification.instances).toHaveLength(0)
+
+    act(() => {
+      vi.advanceTimersByTime(60_000)
+    })
+    expect(MockNotification.instances).toHaveLength(1)
+    expect(MockNotification.instances[0].title).toBe('Concert test')
+  })
+
+  it('annule le rappel en attente si disable() est appelé', () => {
+    vi.setSystemTime(new Date(2026, 6, 18, 20, 44))
+    const { result } = renderHook(({ events }) => useReminders(events), {
+      initialProps: { events: [makeEvent()] },
+    })
+    expect(result.current.status).toBe('enabled')
+    expect(MockNotification.instances).toHaveLength(0)
+
+    act(() => {
+      result.current.disable()
+    })
+    expect(result.current.status).toBe('disabled')
+
+    act(() => {
+      vi.advanceTimersByTime(5 * 60_000)
+    })
+    expect(MockNotification.instances).toHaveLength(0)
+  })
 })
