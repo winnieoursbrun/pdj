@@ -24,6 +24,8 @@ export interface FestEvent {
   category: Category
   subtype: string | null
   description: string | null
+  recommendations?: string[] | null
+  speakers?: string[] | null
 }
 
 export interface Venue {

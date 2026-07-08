@@ -43,7 +43,33 @@ export function EventCard({ event, isFavorite, onToggleFavorite }: EventCardProp
           >
             {expanded ? 'Réduire' : 'En savoir plus'}
           </button>
-          {expanded && <p className="card-desc">{details}</p>}
+          {expanded && (
+            <>
+              <p className="card-desc">{details}</p>
+              {event.recommendations && (
+                <div className="card-recs">
+                  <span className="card-recs-label">Tu aimeras si tu aimes</span>
+                  <div className="card-recs-tags">
+                    {event.recommendations.map((r) => (
+                      <span key={r} className="card-recs-tag">
+                        {r}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {event.speakers && (
+                <div className="card-speakers">
+                  <span className="card-recs-label">Intervenant·es</span>
+                  {event.speakers.map((bio) => (
+                    <p key={bio} className="card-speaker-bio">
+                      {bio}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </>
       )}
     </article>

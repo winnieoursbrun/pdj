@@ -45,7 +45,12 @@
     "venue": "Le Parasol",
     "category": "concert",
     "subtype": "latin funk / afro beat / pop",
-    "description": "Washaa nous invite à une escapade tropicale jubilatoire et transcendante, où les sonorités latines et afro fusionnent avec la modernité des synthétiseurs. Des textes engagés qui évoquent la lutte des peuples en Amérique du Sud."
+    "description": "Washaa nous invite à une escapade tropicale jubilatoire et transcendante, où les sonorités latines et afro fusionnent avec la modernité des synthétiseurs. Des textes engagés qui évoquent la lutte des peuples en Amérique du Sud.",
+    "recommendations": [
+      "La Gallera Social Club",
+      "Fela Kuti",
+      "Buena Vista Social Club"
+    ]
   },
   {
     "id": "asfar-shamsi-ven-1950",
@@ -57,7 +62,12 @@
     "venue": "Le Parapluie",
     "category": "concert",
     "subtype": "chanson pop rapée",
-    "description": "Avec son nouvel EP « cui cui », Asfar Shamsi propose une musique libre entre rap et musiques électroniques, l'intime et la pudeur, la pop et l'organique ; en observatrice lucide et désabusée de ce monde en tension permanente."
+    "description": "Avec son nouvel EP « cui cui », Asfar Shamsi propose une musique libre entre rap et musiques électroniques, l'intime et la pudeur, la pop et l'organique ; en observatrice lucide et désabusée de ce monde en tension permanente.",
+    "recommendations": [
+      "Etienne Daho",
+      "Disiz",
+      "Yoa"
+    ]
   },
   {
     "id": "miossec-ven-2135",
@@ -69,7 +79,12 @@
     "venue": "Le Parapluie",
     "category": "concert",
     "subtype": "chanson française",
-    "description": "Auteur-compositeur aussi lettré que provocateur, l'emblématique chanteur finistérien défend son dernier album « Simplifier ». Avec Stéphane Fromentin et Nicolas Méheust, ils renversent les tables et réinventent le répertoire."
+    "description": "Auteur-compositeur aussi lettré que provocateur, l'emblématique chanteur finistérien défend son dernier album « Simplifier ». Avec Stéphane Fromentin et Nicolas Méheust, ils renversent les tables et réinventent le répertoire.",
+    "recommendations": [
+      "Leonard Cohen",
+      "Têtes Raides",
+      "Zaho de Sagazan"
+    ]
   },
   {
     "id": "lynx-irl-ven-2245",
@@ -81,7 +96,12 @@
     "venue": "Le Parasol",
     "category": "concert",
     "subtype": "rap jungle mélodique",
-    "description": "Rappeuse de Lille influencée par les sonorités UK et les bandes-son de jeux vidéo, Lynx IRL se pose sur des instrus aux accords jazz mêlés à du breakbeat, de la jungle et de la trap. Une musique hybride entre rave et hip-hop."
+    "description": "Rappeuse de Lille influencée par les sonorités UK et les bandes-son de jeux vidéo, Lynx IRL se pose sur des instrus aux accords jazz mêlés à du breakbeat, de la jungle et de la trap. Une musique hybride entre rave et hip-hop.",
+    "recommendations": [
+      "Keny Arkana",
+      "Linlin",
+      "Diam's"
+    ]
   },
   {
     "id": "uzi-freyja-ven-2335",
@@ -93,7 +113,12 @@
     "venue": "Le Parapluie",
     "category": "concert",
     "subtype": "punk hip-hop",
-    "description": "Uzi Freyja va soulever Les Pluies de Juillet avec ses mélanges de vocaux hip-hop, fureur punk et structures électroniques expérimentales. Un charisme hors du commun, sûre d'elle et résolument puissante."
+    "description": "Uzi Freyja va soulever Les Pluies de Juillet avec ses mélanges de vocaux hip-hop, fureur punk et structures électroniques expérimentales. Un charisme hors du commun, sûre d'elle et résolument puissante.",
+    "recommendations": [
+      "Theodora",
+      "Tshégué",
+      "Kompromat"
+    ]
   },
   {
     "id": "twende-pamoja-ven-0040",
@@ -105,7 +130,12 @@
     "venue": "Le Parasol",
     "category": "concert",
     "subtype": "electro afro fusion",
-    "description": "Enfants terribles d'une scène hybride mêlant instrumentation moderne et singeli, cette musique ultra rapide qui met l'Afrique de l'Est en ébullition. Un live explosif, tout en twerk et tachycardie !"
+    "description": "Enfants terribles d'une scène hybride mêlant instrumentation moderne et singeli, cette musique ultra rapide qui met l'Afrique de l'Est en ébullition. Un live explosif, tout en twerk et tachycardie !",
+    "recommendations": [
+      "Maureen",
+      "Sauti Sol",
+      "LinLin"
+    ]
   },
   {
     "id": "louise-petrouchka-ven-0145",
@@ -117,7 +147,13 @@
     "venue": "Le Parasol",
     "category": "concert",
     "subtype": "DJ set",
-    "description": "DJ et organisatrice de soirées, résidente sur Rinse France et fondatrice des soirées La Chatte en Feu, elle propose une expérience musicale libérée, inclusive et résolument moderne."
+    "description": "DJ et organisatrice de soirées, résidente sur Rinse France et fondatrice des soirées La Chatte en Feu, elle propose une expérience musicale libérée, inclusive et résolument moderne.",
+    "recommendations": [
+      "le Reggaeton",
+      "l'UK Bass",
+      "le Dancehall",
+      "le Baile Funk"
+    ]
   },
   {
     "id": "stands-village-sam-1000",
@@ -177,7 +213,14 @@
     "venue": "Le Parasol",
     "category": "conference",
     "subtype": "table ronde",
-    "description": "Qui soigne, qui est soigné·e, qui ne l'est pas, et qui décide ? Une table ronde en deux temps : nommer ce qui casse dans le système de santé, puis ouvrir sur ce qu'on pourrait construire pour une santé pour tous·tes."
+    "description": "Qui soigne, qui est soigné·e, qui ne l'est pas, et qui décide ? Une table ronde en deux temps : nommer ce qui casse dans le système de santé, puis ouvrir sur ce qu'on pourrait construire pour une santé pour tous·tes.",
+    "speakers": [
+      "Arnaud Bontemps est haut fonctionnaire et fondateur du collectif Nos services publics. Il a travaillé au contrôle du bon usage de l'argent public, au Département de la Seine-Saint-Denis et à l'Assurance maladie.",
+      "Fleur Breteau est la fondatrice et porte-parole de Cancer Colère, un collectif qui réunit des malades, ex-malades et futur·es malades du cancer, et exige notamment un moratoire européen sur l'usage des pesticides.",
+      "Eva-Luna Tholance est doula, militante queer et féministe pour l'Observatoire Féministe des Violences Médicales (information et accès au droit des patient·es face aux violences médicales en France).",
+      "Kendrys Legenty est auteur-réalisateur, formé en médecine, patient atteint de maladies chroniques et a été aidant. Aujourd'hui, il dirige La Fabrique des Soignants, un média sur la santé comme un champ de luttes.",
+      "La Fabrique des Soignants est un média associatif d'intérêt général, numérique, créé en 2023 et géré par des soignant·es et des patient·es pour décrypter le fonctionnement du système de santé."
+    ]
   },
   {
     "id": "balade-velo-sam-1030",
@@ -273,7 +316,14 @@
     "venue": "Le Parasol",
     "category": "conference",
     "subtype": "table ronde",
-    "description": "Sortir des récits apocalyptiques qui paralysent et faire de la joie un moteur d'émancipation, vers les lendemains qui chantent qu'on appelle de nos vœux."
+    "description": "Sortir des récits apocalyptiques qui paralysent et faire de la joie un moteur d'émancipation, vers les lendemains qui chantent qu'on appelle de nos vœux.",
+    "speakers": [
+      "Monique Pinçon-Charlot est sociologue et ancienne directrice de recherche au CNRS. Figure majeure de la critique sociale contemporaine, elle est spécialiste de la haute bourgeoisie et des grandes fortunes françaises.",
+      "Myriam Bahaffou est doctorante en philosophie, et enseigne l'éthique féministe et animale à l'université. Elle travaille sur l'intrication des notions de race et d'espèce sous la modernité.",
+      "Kiyémis est autrice, poétesse et conférencière. Elle travaille sur la question de l'amour de soi et sur la place des afrodescendantes dans les espaces européens.",
+      "Caroline Vinet est journaliste indépendante pour Socialter. Elle travaille sur des questions environnementales et de société. Elle fait également de l'éducation aux médias et à l'information auprès des jeunes publics.",
+      "Créé en 2013, Socialter est un média indépendant, éditant une revue papier (bimestrielle) et un site internet, consacré à l'analyse des transformations écologiques, sociales et politiques contemporaines."
+    ]
   },
   {
     "id": "monde-paysan-sam-1330",
@@ -357,7 +407,11 @@
     "venue": "Le Parasol",
     "category": "conference",
     "subtype": "conférence",
-    "description": "Si toutes les personnes qui prennent soin des autres au quotidien s'arrêtent, le monde s'arrête. Mathilde Blézat rend justice aux travailleur·euses de l'ombre et propose des outils concrets pour un syndicalisme de la vie quotidienne."
+    "description": "Si toutes les personnes qui prennent soin des autres au quotidien s'arrêtent, le monde s'arrête. Mathilde Blézat rend justice aux travailleur·euses de l'ombre et propose des outils concrets pour un syndicalisme de la vie quotidienne.",
+    "speakers": [
+      "Mathilde Blézat est journaliste et autrice spécialisée dans les sujets d'éducation, de l'autodéfense féministe et du handicap. Elle a participé à l'écriture du manuel « Notre corps, nous-mêmes » (Hors d'atteinte, 2020).",
+      "La Déferlante est un média et une maison d'édition indépendant·es consacré·es aux féminismes. Lancée en 2021, elle a réussi à s'imposer comme la revue de référence sur les enjeux féministes et les questions LGBTQIA+."
+    ]
   },
   {
     "id": "graine-a-la-graine-sam-1600",
@@ -417,7 +471,13 @@
     "venue": "Le Parasol",
     "category": "conference",
     "subtype": "table ronde",
-    "description": "Comment relier les enjeux écologiques aux questions de justice et construire une écologie qui libère les corps autant que les terres ? Les combats contre le racisme, le sexisme, le validisme, le spécisme et les crises écologiques s'entremêlent."
+    "description": "Comment relier les enjeux écologiques aux questions de justice et construire une écologie qui libère les corps autant que les terres ? Les combats contre le racisme, le sexisme, le validisme, le spécisme et les crises écologiques s'entremêlent.",
+    "speakers": [
+      "Myriam Bahaffou est doctorante en philosophie entre l'Ontario et la France, et enseigne l'éthique féministe et animale à l'université. Elle travaille sur l'intrication des notions de race et d'espèce sous la modernité.",
+      "L'Association A4 a pour objectif d'accueillir, de former, d'accompagner l'accès au travail et l'administratif de personnes avec ou sans papiers, urbaines ou rurales, dans les domaines de l'agriculture et de l'artisanat.",
+      "Lilith Rauld est une membre fondatrice du collectif DSAVEC (Diasporas solidaires avec les victimes de l'empoisonnement) et participe à visibiliser la cause ouvrière martiniquaise.",
+      "Rémi-Kenzo Pages est journaliste scientifique pigiste, spécialisé en santé environnementale et plus particulièrement sur les sujets liés au racisme environnemental."
+    ]
   },
   {
     "id": "fromages-op-sam-1700",
@@ -501,7 +561,12 @@
     "venue": "Le Parasol",
     "category": "concert",
     "subtype": "pop electro énervée",
-    "description": "Le son d'une génération qui voit le monde s'écrouler sous ses yeux : un duo new wave qui raconte nos paradoxes et nos faiblesses dans un mélange de synthés crades et de textes accrocheurs, engagés, en français."
+    "description": "Le son d'une génération qui voit le monde s'écrouler sous ses yeux : un duo new wave qui raconte nos paradoxes et nos faiblesses dans un mélange de synthés crades et de textes accrocheurs, engagés, en français.",
+    "recommendations": [
+      "Taxi Girl",
+      "Ditter",
+      "Etienne Daho"
+    ]
   },
   {
     "id": "pomme-sam-2150",
@@ -513,7 +578,12 @@
     "venue": "Le Parapluie",
     "category": "concert",
     "subtype": "pop folk indie",
-    "description": "Avec « des excuses », sorti hors des sentiers battus du marketing de l'industrie de la musique, Pomme livre une écriture affûtée et une mélodie entêtante, telle une ritournelle salvatrice."
+    "description": "Avec « des excuses », sorti hors des sentiers battus du marketing de l'industrie de la musique, Pomme livre une écriture affûtée et une mélodie entêtante, telle une ritournelle salvatrice.",
+    "recommendations": [
+      "Patrick Watson",
+      "Solann",
+      "Billie Eilish"
+    ]
   },
   {
     "id": "animations-surprises-sam-2300",
@@ -537,7 +607,12 @@
     "venue": "Le Parapluie",
     "category": "concert",
     "subtype": "rap",
-    "description": "Yvnnis et le rap, c'est une évidence, simple, fluide, authentique. Le parfait équilibre entre l'effervescence de la nouvelle scène et un profond respect des codes : qualité des rimes, précision du flow, pertinence des placements."
+    "description": "Yvnnis et le rap, c'est une évidence, simple, fluide, authentique. Le parfait équilibre entre l'effervescence de la nouvelle scène et un profond respect des codes : qualité des rimes, précision du flow, pertinence des placements.",
+    "recommendations": [
+      "Rounhaa",
+      "Luther",
+      "NeS"
+    ]
   },
   {
     "id": "jasmine-not-jafar-sam-0105",
@@ -549,7 +624,12 @@
     "venue": "Le Parasol",
     "category": "concert",
     "subtype": "techno live",
-    "description": "Préparez-vous à une grande teuf avec les kicks insolents et la basse sale gosse des Jasmine Not Jafar ! Leur attitude « brat girl power » et la lutte contre le patriarcat imprègnent leur musique."
+    "description": "Préparez-vous à une grande teuf avec les kicks insolents et la basse sale gosse des Jasmine Not Jafar ! Leur attitude « brat girl power » et la lutte contre le patriarcat imprègnent leur musique.",
+    "recommendations": [
+      "Charlie XCX",
+      "Cobrah",
+      "Coucou Chloé"
+    ]
   },
   {
     "id": "violet-indigo-sam-0200",
@@ -561,7 +641,12 @@
     "venue": "Le Parasol",
     "category": "concert",
     "subtype": "DJ set",
-    "description": "Habituée des mixs tonitruants, jamais à court de bangers, Violet Indigo c'est l'hybridation musicale, la légèreté et la désinvolture — l'arrivée en grande pompe de la Gen Z derrière les platines."
+    "description": "Habituée des mixs tonitruants, jamais à court de bangers, Violet Indigo c'est l'hybridation musicale, la légèreté et la désinvolture — l'arrivée en grande pompe de la Gen Z derrière les platines.",
+    "recommendations": [
+      "Le RnB",
+      "la funk",
+      "bass et le hip hop"
+    ]
   },
   {
     "id": "stands-village-dim-1000",
@@ -621,7 +706,10 @@
     "venue": "Le Parasol",
     "category": "conference",
     "subtype": "conférence",
-    "description": "Arboriste grimpeuse pionnière, Karine Marsilly nous invite à descendre de notre paradoxale position de surplomb pour nous mettre « à hauteur d'arbre » : ressentir les interdépendances, reconnaître la richesse du vivant et questionner notre place."
+    "description": "Arboriste grimpeuse pionnière, Karine Marsilly nous invite à descendre de notre paradoxale position de surplomb pour nous mettre « à hauteur d'arbre » : ressentir les interdépendances, reconnaître la richesse du vivant et questionner notre place.",
+    "speakers": [
+      "Karine Marsilly est une figure emblématique du monde de l'arboriculture et la première femme arboriste grimpeuse française. Elle dédie sa vie à la préservation des arbres et à la transmission de son savoir."
+    ]
   },
   {
     "id": "balade-naturaliste-dim-1030",
@@ -753,7 +841,11 @@
     "venue": "Le Parasol",
     "category": "conference",
     "subtype": "conférence",
-    "description": "Comment sortir du punitivisme à tout prix et construire une justice qui répare, qui libère et qui prend soin ? La sociologue Gwenola Ricordeau, spécialiste en justice criminelle, tente de répondre avec nous."
+    "description": "Comment sortir du punitivisme à tout prix et construire une justice qui répare, qui libère et qui prend soin ? La sociologue Gwenola Ricordeau, spécialiste en justice criminelle, tente de répondre avec nous.",
+    "speakers": [
+      "Gwenola Ricordeau est sociologue, féministe et militante pour l'abolition du système pénal et dirige la collection « Cahiers Abolitionnisme Pénal » chez Atelier Téméraire, lancée en novembre 2025.",
+      "Politis est un magazine hebdomadaire indépendant et engagé. Politique, société, écologie, culture, intersections... Chaque semaine en papier et sur politis.fr, des dossiers, des vidéos, des analyses et reportages, pour toutes celles et tous ceux qui ne veulent pas être les spectateur·ices passif·ves des évolutions du monde."
+    ]
   },
   {
     "id": "docteur-love-dim-1500",

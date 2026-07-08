@@ -11,6 +11,9 @@ const GROUPS: { key: VenueGroup; label: string }[] = [
   { key: 'vente', label: 'Boutique, bar & restauration' },
 ]
 
+const ADDRESS = '290 Route des Diligences, 50800 Champrepus'
+const MAPS_HREF = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ADDRESS)}`
+
 export function MapTab() {
   return (
     <section aria-label="Carte du site">
@@ -29,6 +32,15 @@ export function MapTab() {
         </TransformWrapper>
         <p className="map-hint">Pince ou double-tape pour zoomer</p>
       </div>
+
+      <a className="address-card" href={MAPS_HREF} target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true" className="address-pin">
+          <path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+          <circle cx="12" cy="9" r="2.4" fill="none" stroke="currentColor" strokeWidth="1.8" />
+        </svg>
+        <span className="address-text">{ADDRESS}</span>
+        <span className="address-cta">Ouvrir dans Plans</span>
+      </a>
 
       <div className="legend">
         {GROUPS.map((g) => (
