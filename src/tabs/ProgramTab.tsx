@@ -9,9 +9,10 @@ const events = eventsData as FestEvent[]
 interface ProgramTabProps {
   favorites: Set<string>
   onToggleFavorite: (id: string) => void
+  friendsByEvent: Map<string, string[]>
 }
 
-export function ProgramTab({ favorites, onToggleFavorite }: ProgramTabProps) {
+export function ProgramTab({ favorites, onToggleFavorite, friendsByEvent }: ProgramTabProps) {
   const [day, setDay] = useState<Day>('ven')
   const [category, setCategory] = useState<Category | 'all'>('all')
 
@@ -72,6 +73,7 @@ export function ProgramTab({ favorites, onToggleFavorite }: ProgramTabProps) {
             event={e}
             isFavorite={favorites.has(e.id)}
             onToggleFavorite={onToggleFavorite}
+            friends={friendsByEvent.get(e.id)}
           />
         ))}
       </div>

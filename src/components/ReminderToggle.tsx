@@ -9,7 +9,7 @@ interface ReminderToggleProps {
 export function ReminderToggle({ status, enable, disable }: ReminderToggleProps) {
   if (status === 'unsupported') {
     return (
-      <p className="reminder-toggle-note">
+      <p className="toggle-note">
         Les rappels ne sont pas disponibles sur ce navigateur. Sur iPhone, installe d'abord
         l'appli sur l'écran d'accueil.
       </p>
@@ -19,27 +19,27 @@ export function ReminderToggle({ status, enable, disable }: ReminderToggleProps)
   const checked = status === 'enabled'
 
   return (
-    <div className="reminder-toggle-row">
+    <div className="toggle-row">
       <span>Rappel 15 min avant chaque événement de ma timeline</span>
       <button
         type="button"
         role="switch"
         aria-checked={checked}
         aria-label="Activer les rappels de notification"
-        className={`reminder-toggle${checked ? ' is-on' : ''}`}
+        className={`toggle-switch${checked ? ' is-on' : ''}`}
         disabled={status === 'denied'}
         onClick={() => (checked ? disable() : enable())}
       >
-        <span className="reminder-toggle-knob" />
+        <span className="toggle-switch-knob" />
       </button>
       {status === 'denied' && (
-        <p className="reminder-toggle-note">
+        <p className="toggle-note">
           Les notifications sont bloquées pour ce site. Réautorise-les depuis les réglages de
           ton navigateur ou de ton téléphone.
         </p>
       )}
       {status !== 'denied' && (
-        <p className="reminder-toggle-note">
+        <p className="toggle-note">
           Les rappels ne fonctionnent que si l'appli reste ouverte ou a été mise en arrière-plan
           récemment, pas après une fermeture complète prolongée.
         </p>

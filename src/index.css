@@ -672,6 +672,11 @@ p {
   margin-left: 12px;
 }
 
+.tl-item-friend {
+  border-style: dashed;
+  box-shadow: none;
+}
+
 .tl-dot {
   position: absolute;
   left: -25px;
@@ -980,7 +985,7 @@ p {
   line-height: 1;
 }
 
-.reminder-toggle-row {
+.toggle-row {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -988,11 +993,11 @@ p {
   font-size: 0.88rem;
 }
 
-.reminder-toggle-row span {
+.toggle-row span {
   flex: 1;
 }
 
-.reminder-toggle {
+.toggle-switch {
   flex-shrink: 0;
   position: relative;
   width: 46px;
@@ -1003,15 +1008,15 @@ p {
   padding: 0;
 }
 
-.reminder-toggle.is-on {
+.toggle-switch.is-on {
   background: var(--pink);
 }
 
-.reminder-toggle:disabled {
+.toggle-switch:disabled {
   opacity: 0.5;
 }
 
-.reminder-toggle-knob {
+.toggle-switch-knob {
   position: absolute;
   top: 2px;
   left: 2px;
@@ -1023,13 +1028,192 @@ p {
   transition: transform 0.15s ease;
 }
 
-.reminder-toggle.is-on .reminder-toggle-knob {
+.toggle-switch.is-on .toggle-switch-knob {
   transform: translateX(20px);
 }
 
-.reminder-toggle-note {
+.toggle-note {
   margin: 0 10px 10px;
   font-size: 0.82rem;
   line-height: 1.45;
   color: var(--muted);
+}
+
+/* ---------- Groupe de copains ---------- */
+.group-panel {
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--sticker);
+  padding: 12px 14px 13px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.group-title {
+  font-family: var(--display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+}
+
+.group-code {
+  padding: 3px 12px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--yellow);
+  color: #141414;
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  box-shadow: var(--sticker-sm);
+}
+
+.group-hint {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.group-members {
+  margin: 0 0 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.group-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.group-btn {
+  padding: 8px 16px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--pink);
+  color: #141414;
+  font-family: var(--display);
+  font-size: 0.88rem;
+  font-weight: 800;
+  box-shadow: var(--sticker-sm);
+  cursor: pointer;
+}
+
+.group-btn:disabled {
+  opacity: 0.45;
+  box-shadow: none;
+  cursor: default;
+}
+
+.group-btn-ghost {
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: none;
+}
+
+.group-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.group-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.group-input {
+  padding: 9px 12px;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 1rem;
+  font-family: var(--body);
+}
+
+.group-input-code {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.group-invite {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.group-qr {
+  width: 180px;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: var(--sticker-sm);
+}
+
+.group-qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.group-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 2px dashed var(--line);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.group-toggle span {
+  flex: 1;
+  line-height: 1.3;
+}
+
+/* Pastilles des copains qui ont mis un événement en favori */
+.card-group-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.friend-chips {
+  display: inline-flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.friend-chip {
+  padding: 2px 9px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--sky);
+  color: #141414;
+  font-size: 0.72rem;
+  font-weight: 800;
 }

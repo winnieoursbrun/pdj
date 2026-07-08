@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useFavorites } from './hooks/useFavorites'
+import { useGroup } from './hooks/useGroup'
 import { useInstallPrompt } from './hooks/useInstallPrompt'
 import { useReminders } from './hooks/useReminders'
 import { FaqTab } from './tabs/FaqTab'
@@ -66,8 +67,14 @@ function TabIcon({ tab }: { tab: Tab }) {
   }
 }
 
+function readJoinCode(): string | null {
+  const match = /#join=([A-Za-z0-9-]+)/.exec(location.hash)
+  return match ? match[1] : null
+}
+
 export default function App() {
-  const [tab, setTab] = useState<Tab>('program')
+  const [joinCode] = useState<string | null>(readJoinCode)
+  const [tab, setTab] = useState<Tab>(joinCode ? 'timeline' : 'program')
   const [iosHelpOpen, setIosHelpOpen] = useState(false)
   const { favorites, toggle } = useFavorites()
   const favoriteEvents = useMemo(
@@ -75,8 +82,15 @@ export default function App() {
     [favorites],
   )
   const reminders = useReminders(favoriteEvents)
+  const groupApi = useGroup(favorites)
   const install = useInstallPrompt()
   const showInstall = install.canPrompt || install.needsIosHelp
+
+  useEffect(() => {
+    if (joinCode) {
+      history.replaceState(null, '', location.pathname + location.search)
+    }
+  }, [joinCode])
 
   return (
     <div className="app">
@@ -166,7 +180,11 @@ export default function App() {
       <main className="app-main">
         {tab === 'map' && <MapTab />}
         {tab === 'program' && (
-          <ProgramTab favorites={favorites} onToggleFavorite={toggle} />
+          <ProgramTab
+            favorites={favorites}
+            onToggleFavorite={toggle}
+            friendsByEvent={groupApi.friendsByEvent}
+          />
         )}
         {tab === 'timeline' && (
           <TimelineTab
@@ -174,6 +192,8 @@ export default function App() {
             onToggleFavorite={toggle}
             reminderStatus={reminders.status}
             onEnableReminders={reminders.enable}
+            groupApi={groupApi}
+            initialJoinCode={joinCode}
           />
         )}
         {tab === 'faq' && (

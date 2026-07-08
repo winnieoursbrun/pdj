@@ -7,9 +7,10 @@ interface EventCardProps {
   event: FestEvent
   isFavorite: boolean
   onToggleFavorite: (id: string) => void
+  friends?: string[]
 }
 
-export function EventCard({ event, isFavorite, onToggleFavorite }: EventCardProps) {
+export function EventCard({ event, isFavorite, onToggleFavorite, friends }: EventCardProps) {
   const [expanded, setExpanded] = useState(false)
   const details = event.description ?? event.subtype
 
@@ -33,6 +34,17 @@ export function EventCard({ event, isFavorite, onToggleFavorite }: EventCardProp
           onToggle={() => onToggleFavorite(event.id)}
         />
       </div>
+      {friends && friends.length > 0 && (
+        <div className="card-group-row">
+          <span className="friend-chips">
+            {friends.map((n) => (
+              <span key={n} className="friend-chip">
+                {n}
+              </span>
+            ))}
+          </span>
+        </div>
+      )}
       {event.description && (
         <>
           <button
