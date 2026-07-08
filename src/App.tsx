@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import { useFavorites } from './hooks/useFavorites'
 import { useInstallPrompt } from './hooks/useInstallPrompt'
+import { FaqTab } from './tabs/FaqTab'
 import { MapTab } from './tabs/MapTab'
 import { ProgramTab } from './tabs/ProgramTab'
 import { TimelineTab } from './tabs/TimelineTab'
 
-type Tab = 'map' | 'program' | 'timeline'
+type Tab = 'map' | 'program' | 'timeline' | 'faq'
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'map', label: 'Carte' },
   { key: 'program', label: 'Programme' },
   { key: 'timeline', label: 'Ma timeline' },
+  { key: 'faq', label: 'FAQ' },
 ]
 
 function TabIcon({ tab }: { tab: Tab }) {
@@ -40,6 +42,20 @@ function TabIcon({ tab }: { tab: Tab }) {
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 2.5c-5.5 0-9.5 4-9.8 8.7 0 .3.3.55.6.4 1-.5 2.4-.8 3.4-.1.4.3.9.3 1.3 0 1.2-.9 2.6-.9 3.8 0 .4.3.9.3 1.3 0 1.2-.9 2.6-.9 3.8 0 .4.3.9.3 1.3 0 1-.7 2.4-.4 3.4.1.3.15.6-.1.6-.4C21.5 6.5 17.5 2.5 12 2.5Z" />
           <path d="M12 12v6.5a1.6 1.6 0 0 1-3.2 0" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+      )
+    case 'faq':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
+          <path
+            d="M12 17v.01M9.5 9.5c0-1.4 1.1-2.5 2.5-2.5s2.5 1 2.5 2.3c0 1.2-.8 1.7-1.6 2.2-.7.4-1.4.9-1.4 1.9"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       )
   }
@@ -145,6 +161,7 @@ export default function App() {
         {tab === 'timeline' && (
           <TimelineTab favorites={favorites} onToggleFavorite={toggle} />
         )}
+        {tab === 'faq' && <FaqTab />}
       </main>
 
       <nav className="tabbar" aria-label="Navigation principale">

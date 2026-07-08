@@ -31,3 +31,10 @@ export interface Venue {
   name: string
   group: VenueGroup
 }
+
+export interface FaqItem {
+  id: string
+  category: string
+  question: string
+  answer: string
+}
