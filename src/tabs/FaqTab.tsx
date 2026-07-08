@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import type { FaqItem } from '../types'
+import type { ReminderStatus } from '../hooks/useReminders'
+import { ReminderToggle } from '../components/ReminderToggle'
 import faqData from '../data/faq.json'
 
 const faq = faqData as FaqItem[]
@@ -57,7 +59,13 @@ function Question({ item }: { item: FaqItem }) {
   )
 }
 
-export function FaqTab() {
+interface FaqTabProps {
+  reminderStatus: ReminderStatus
+  onEnableReminders: () => void
+  onDisableReminders: () => void
+}
+
+export function FaqTab({ reminderStatus, onEnableReminders, onDisableReminders }: FaqTabProps) {
   return (
     <section aria-label="FAQ et infos pratiques">
       <div className="legend">
@@ -69,6 +77,13 @@ export function FaqTab() {
                 <Question key={item.id} item={item} />
               ))}
             </div>
+            {category === "L'application" && (
+              <ReminderToggle
+                status={reminderStatus}
+                enable={onEnableReminders}
+                disable={onDisableReminders}
+              />
+            )}
           </details>
         ))}
       </div>

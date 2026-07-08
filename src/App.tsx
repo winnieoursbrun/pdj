@@ -1,10 +1,13 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useFavorites } from './hooks/useFavorites'
 import { useInstallPrompt } from './hooks/useInstallPrompt'
+import { useReminders } from './hooks/useReminders'
 import { FaqTab } from './tabs/FaqTab'
 import { MapTab } from './tabs/MapTab'
 import { ProgramTab } from './tabs/ProgramTab'
 import { TimelineTab } from './tabs/TimelineTab'
+import eventsData from './data/events.json'
+import type { FestEvent } from './types'
 
 type Tab = 'map' | 'program' | 'timeline' | 'faq'
 
@@ -14,6 +17,8 @@ const TABS: { key: Tab; label: string }[] = [
   { key: 'timeline', label: 'Ma timeline' },
   { key: 'faq', label: 'FAQ' },
 ]
+
+const events = eventsData as FestEvent[]
 
 function TabIcon({ tab }: { tab: Tab }) {
   switch (tab) {
@@ -65,6 +70,11 @@ export default function App() {
   const [tab, setTab] = useState<Tab>('program')
   const [iosHelpOpen, setIosHelpOpen] = useState(false)
   const { favorites, toggle } = useFavorites()
+  const favoriteEvents = useMemo(
+    () => events.filter((e) => favorites.has(e.id)),
+    [favorites],
+  )
+  const reminders = useReminders(favoriteEvents)
   const install = useInstallPrompt()
   const showInstall = install.canPrompt || install.needsIosHelp
 
@@ -159,9 +169,20 @@ export default function App() {
           <ProgramTab favorites={favorites} onToggleFavorite={toggle} />
         )}
         {tab === 'timeline' && (
-          <TimelineTab favorites={favorites} onToggleFavorite={toggle} />
+          <TimelineTab
+            favorites={favorites}
+            onToggleFavorite={toggle}
+            reminderStatus={reminders.status}
+            onEnableReminders={reminders.enable}
+          />
         )}
-        {tab === 'faq' && <FaqTab />}
+        {tab === 'faq' && (
+          <FaqTab
+            reminderStatus={reminders.status}
+            onEnableReminders={reminders.enable}
+            onDisableReminders={reminders.disable}
+          />
+        )}
       </main>
 
       <nav className="tabbar" aria-label="Navigation principale">

@@ -1,6 +1,8 @@
 import type { Day, FestEvent } from '../types'
 import { byTime, DAY_LONG, DAYS, formatRange } from '../lib/schedule'
 import { UmbrellaButton } from '../components/Umbrella'
+import { ReminderBanner } from '../components/ReminderBanner'
+import type { ReminderStatus } from '../hooks/useReminders'
 import eventsData from '../data/events.json'
 
 const events = eventsData as FestEvent[]
@@ -8,9 +10,16 @@ const events = eventsData as FestEvent[]
 interface TimelineTabProps {
   favorites: Set<string>
   onToggleFavorite: (id: string) => void
+  reminderStatus: ReminderStatus
+  onEnableReminders: () => void
 }
 
-export function TimelineTab({ favorites, onToggleFavorite }: TimelineTabProps) {
+export function TimelineTab({
+  favorites,
+  onToggleFavorite,
+  reminderStatus,
+  onEnableReminders,
+}: TimelineTabProps) {
   const mine = events.filter((e) => favorites.has(e.id)).sort(byTime)
 
   if (mine.length === 0) {
@@ -42,6 +51,11 @@ export function TimelineTab({ favorites, onToggleFavorite }: TimelineTabProps) {
 
   return (
     <section aria-label="Ma timeline">
+      <ReminderBanner
+        status={reminderStatus}
+        enable={onEnableReminders}
+        favoritesCount={favorites.size}
+      />
       {byDay.map((group) => (
         <div key={group.day} className="tl-day">
           <h2 className={`tl-day-title day-${group.day}`}>{DAY_LONG[group.day]}</h2>

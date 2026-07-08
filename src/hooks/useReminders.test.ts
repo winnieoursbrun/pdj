@@ -8,10 +8,12 @@ class MockNotification {
   static requestPermission = vi.fn()
   static instances: MockNotification[] = []
   onclick: (() => void) | null = null
-  constructor(
-    public title: string,
-    public options?: NotificationOptions,
-  ) {
+  title: string
+  options?: NotificationOptions
+
+  constructor(title: string, options?: NotificationOptions) {
+    this.title = title
+    this.options = options
     MockNotification.instances.push(this)
   }
 }
