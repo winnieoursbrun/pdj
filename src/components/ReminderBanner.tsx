@@ -12,7 +12,7 @@ interface ReminderBannerProps {
 export function ReminderBanner({ status, enable, favoritesCount }: ReminderBannerProps) {
   const [prompted, setPrompted] = useState(() => localStorage.getItem(PROMPTED_KEY) === 'true')
 
-  if (prompted || favoritesCount !== 1 || status !== 'default') {
+  if (prompted || favoritesCount < 1 || status !== 'default') {
     return null
   }
 

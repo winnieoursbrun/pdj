@@ -38,6 +38,12 @@ export function ReminderToggle({ status, enable, disable }: ReminderToggleProps)
           ton navigateur ou de ton téléphone.
         </p>
       )}
+      {status !== 'denied' && (
+        <p className="reminder-toggle-note">
+          Les rappels ne fonctionnent que si l'appli reste ouverte ou a été mise en arrière-plan
+          récemment, pas après une fermeture complète prolongée.
+        </p>
+      )}
     </div>
   )
 }

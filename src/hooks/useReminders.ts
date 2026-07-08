@@ -83,6 +83,19 @@ export function useReminders(favoriteEvents: FestEvent[] = []) {
   }, [])
 
   useEffect(() => {
+    function recheckOnVisible() {
+      if (document.visibilityState === 'visible') {
+        setStatus(computeStatus())
+      }
+    }
+
+    document.addEventListener('visibilitychange', recheckOnVisible)
+    return () => {
+      document.removeEventListener('visibilitychange', recheckOnVisible)
+    }
+  }, [])
+
+  useEffect(() => {
     if (status !== 'enabled') {
       return
     }

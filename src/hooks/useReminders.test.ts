@@ -238,3 +238,33 @@ describe('useReminders scheduling', () => {
     expect(MockNotification.instances).toHaveLength(0)
   })
 })
+
+describe('useReminders permission re-check', () => {
+  function setVisibilityState(value: DocumentVisibilityState) {
+    Object.defineProperty(document, 'visibilityState', {
+      value,
+      configurable: true,
+    })
+  }
+
+  afterEach(() => {
+    setVisibilityState('visible')
+  })
+
+  it('recalcule le statut quand l\'appli redevient visible après un changement externe de permission', () => {
+    MockNotification.permission = 'default'
+    const { result } = renderHook(() => useReminders())
+    expect(result.current.status).toBe('default')
+
+    // La permission est accordée en arrière-plan (ex. réglages du navigateur), hors de l'appli.
+    MockNotification.permission = 'granted'
+
+    setVisibilityState('visible')
+    act(() => {
+      document.dispatchEvent(new Event('visibilitychange'))
+    })
+
+    // Accordée mais pas explicitement activée via enable() => 'disabled' selon computeStatus().
+    expect(result.current.status).toBe('disabled')
+  })
+})
