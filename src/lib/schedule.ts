@@ -49,3 +49,13 @@ export function formatRange(e: FestEvent): string {
   const start = e.start.replace(':', 'h')
   return e.end ? `${start} – ${e.end.replace(':', 'h')}` : start
 }
+
+export function eventStartDate(e: FestEvent): Date {
+  const dayInfo = DAYS.find((d) => d.key === e.day)
+  if (!dayInfo) {
+    throw new Error(`Unknown day: ${e.day}`)
+  }
+  const [hours, minutes] = e.start.split(':').map(Number)
+  const date = hours < 5 ? Number(dayInfo.date) + 1 : Number(dayInfo.date)
+  return new Date(2026, 6, date, hours, minutes)
+}
