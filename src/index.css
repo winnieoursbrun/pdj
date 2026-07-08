@@ -924,3 +924,112 @@ p {
   color: var(--muted);
   white-space: pre-line;
 }
+
+/* ---------- Rappels de notification ---------- */
+.reminder-banner {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--sticker-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reminder-banner p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.reminder-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reminder-banner-enable {
+  padding: 8px 14px;
+  background: var(--yellow);
+  color: #141414;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  box-shadow: var(--sticker-sm);
+  font-weight: 800;
+  font-family: var(--display);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.reminder-banner-enable:active {
+  box-shadow: none;
+  transform: translate(2px, 2px);
+}
+
+.reminder-banner-dismiss {
+  margin-left: auto;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.reminder-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  font-size: 0.88rem;
+}
+
+.reminder-toggle-row span {
+  flex: 1;
+}
+
+.reminder-toggle {
+  flex-shrink: 0;
+  position: relative;
+  width: 46px;
+  height: 26px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  padding: 0;
+}
+
+.reminder-toggle.is-on {
+  background: var(--pink);
+}
+
+.reminder-toggle:disabled {
+  opacity: 0.5;
+}
+
+.reminder-toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  background: var(--card);
+  transition: transform 0.15s ease;
+}
+
+.reminder-toggle.is-on .reminder-toggle-knob {
+  transform: translateX(20px);
+}
+
+.reminder-toggle-note {
+  margin: 0 10px 10px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
