@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import * as Sentry from '@sentry/react'
 import { eventStartDate } from '../lib/schedule'
 import type { FestEvent } from '../types'
 
@@ -61,10 +62,12 @@ export function useReminders(favoriteEvents: FestEvent[] = []) {
     if (Notification.permission === 'granted') {
       setEnabledInStorage(true)
       setStatus('enabled')
+      Sentry.metrics.count('reminders.enable', 1, { attributes: { result: 'granted' } })
       return
     }
     if (Notification.permission === 'denied') {
       setStatus('denied')
+      Sentry.metrics.count('reminders.enable', 1, { attributes: { result: 'denied' } })
       return
     }
     void Notification.requestPermission().then((permission) => {
@@ -74,12 +77,14 @@ export function useReminders(favoriteEvents: FestEvent[] = []) {
       } else {
         setStatus(permission === 'denied' ? 'denied' : 'default')
       }
+      Sentry.metrics.count('reminders.enable', 1, { attributes: { result: permission } })
     })
   }, [])
 
   const disable = useCallback(() => {
     setEnabledInStorage(false)
     setStatus('disabled')
+    Sentry.metrics.count('reminders.disable', 1)
   }, [])
 
   useEffect(() => {

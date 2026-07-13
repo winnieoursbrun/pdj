@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import * as Sentry from '@sentry/react'
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>
@@ -27,6 +28,7 @@ export function useInstallPrompt() {
     const onInstalled = () => {
       setInstalled(true)
       setDeferred(null)
+      Sentry.metrics.count('pwa.installed', 1)
     }
     window.addEventListener('beforeinstallprompt', onPrompt)
     window.addEventListener('appinstalled', onInstalled)
@@ -39,6 +41,8 @@ export function useInstallPrompt() {
   const promptInstall = async () => {
     if (!deferred) return
     await deferred.prompt()
+    const choice = await deferred.userChoice
+    Sentry.metrics.count('pwa.install_prompt', 1, { attributes: { outcome: choice.outcome } })
     setDeferred(null)
   }
 

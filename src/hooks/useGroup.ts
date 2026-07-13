@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import * as Sentry from '@sentry/react'
 import {
   decryptState,
   deriveGroupKeys,
@@ -173,6 +174,7 @@ export function useGroup(favorites: Set<string>) {
     (name: string): string => {
       const code = generateGroupCode()
       enter(code, name)
+      Sentry.metrics.count('group.create', 1)
       return code
     },
     [enter],
@@ -181,12 +183,14 @@ export function useGroup(favorites: Set<string>) {
   const join = useCallback(
     (codeInput: string, name: string) => {
       enter(normalizeCode(codeInput), name)
+      Sentry.metrics.count('group.join', 1)
     },
     [enter],
   )
 
   const leave = useCallback(() => {
     if (stored) {
+      Sentry.metrics.count('group.leave', 1)
       // Tombstone best-effort : si un relais est joignable, les autres
       // membres purgent immédiatement mes favoris de leur timeline.
       const leaving = stored
@@ -214,6 +218,13 @@ export function useGroup(favorites: Set<string>) {
         .map(([, state]) => state),
     [members, myPubkey],
   )
+
+  useEffect(() => {
+    if (!stored) {
+      return
+    }
+    Sentry.metrics.gauge('group.members', others.length)
+  }, [stored, others.length])
 
   const friendsByEvent = useMemo(() => {
     const map = new Map<string, string[]>()

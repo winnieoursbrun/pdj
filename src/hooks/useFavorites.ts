@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import * as Sentry from '@sentry/react'
 
 const STORAGE_KEY = 'pdj26-favorites'
 
@@ -16,12 +17,14 @@ export function useFavorites() {
   const toggle = useCallback((id: string) => {
     setFavorites((prev) => {
       const next = new Set(prev)
-      if (next.has(id)) {
+      const action = next.has(id) ? 'remove' : 'add'
+      if (action === 'remove') {
         next.delete(id)
       } else {
         next.add(id)
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]))
+      Sentry.metrics.count('favorite.toggle', 1, { attributes: { action } })
       return next
     })
   }, [])

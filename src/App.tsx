@@ -228,7 +228,10 @@ export default function App() {
             type="button"
             className={`tabbar-btn${tab === t.key ? ' is-active' : ''}`}
             aria-current={tab === t.key ? 'page' : undefined}
-            onClick={() => setTab(t.key)}
+            onClick={() => {
+              setTab(t.key)
+              Sentry.metrics.count('tab.view', 1, { attributes: { tab: t.key } })
+            }}
           >
             <TabIcon tab={t.key} />
             <span>{t.label}</span>
