@@ -1,10 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { sentryVitePlugin } from '@sentry/vite-plugin'
 
 // https://vite.dev/config/
 export default defineConfig({
   base: '/pdj/',
+  build: {
+    sourcemap: true,
+  },
   plugins: [
     react(),
     VitePWA({
@@ -36,5 +40,19 @@ export default defineConfig({
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
       },
     }),
+    // Uploads source maps to Sentry; no-ops when SENTRY_AUTH_TOKEN isn't set (e.g. local dev).
+    // Must stay last in this array — Sentry's plugin needs to see the final build output.
+    ...(process.env.SENTRY_AUTH_TOKEN
+      ? [
+          sentryVitePlugin({
+            org: 'winnietech',
+            project: 'pdj-react',
+            authToken: process.env.SENTRY_AUTH_TOKEN,
+            sourcemaps: {
+              filesToDeleteAfterUpload: ['./dist/**/*.map'],
+            },
+          }),
+        ]
+      : []),
   ],
 })

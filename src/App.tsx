@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import * as Sentry from '@sentry/react'
 import { useFavorites } from './hooks/useFavorites'
 import { useGroup } from './hooks/useGroup'
 import { useInstallPrompt } from './hooks/useInstallPrompt'
@@ -132,6 +133,21 @@ export default function App() {
               />
             </svg>
             Installer
+          </button>
+        )}
+        {import.meta.env.DEV && (
+          <button
+            type="button"
+            style={{ marginLeft: 8, opacity: 0.6 }}
+            onClick={() => {
+              Sentry.logger.info('User triggered test error', {
+                action: 'test_error_button_click',
+              })
+              Sentry.metrics.count('test_counter', 1)
+              throw new Error('This is your first error!')
+            }}
+          >
+            Break the world (Sentry test)
           </button>
         )}
       </header>
