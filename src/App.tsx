@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as Sentry from '@sentry/react'
 import { useFavorites } from './hooks/useFavorites'
 import { useGroup } from './hooks/useGroup'
@@ -73,9 +73,18 @@ function readJoinCode(): string | null {
   return match ? match[1] : null
 }
 
+function tabFromHash(hash: string): Tab | null {
+  const match = /^#\/(map|program|timeline|faq)$/.exec(hash)
+  return match ? (match[1] as Tab) : null
+}
+
 export default function App() {
   const [joinCode] = useState<string | null>(readJoinCode)
-  const [tab, setTab] = useState<Tab>(joinCode ? 'timeline' : 'program')
+  const [tab, setTab] = useState<Tab>(
+    () => (joinCode ? 'timeline' : tabFromHash(location.hash)) ?? 'program',
+  )
+  const initialTabRef = useRef(tab)
+  const isFirstTabRender = useRef(true)
   const [iosHelpOpen, setIosHelpOpen] = useState(false)
   const { favorites, toggle } = useFavorites()
   const favoriteEvents = useMemo(
@@ -87,11 +96,42 @@ export default function App() {
   const install = useInstallPrompt()
   const showInstall = install.canPrompt || install.needsIosHelp
 
+  // Chaque onglet a sa propre entrée d'historique : sur Android, le bouton
+  // retour du système (PWA installée) revient à l'onglet précédent au lieu
+  // de fermer l'application immédiatement.
   useEffect(() => {
-    if (joinCode) {
-      history.replaceState(null, '', location.pathname + location.search)
+    const initialTab = initialTabRef.current
+    history.replaceState(
+      { tab: initialTab },
+      '',
+      `${location.pathname}${location.search}#/${initialTab}`,
+    )
+
+    function onPopState(e: PopStateEvent) {
+      const next = (e.state as { tab?: Tab } | null)?.tab ?? tabFromHash(location.hash) ?? 'program'
+      setTab(next)
     }
-  }, [joinCode])
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
+
+  const navigateToTab = useCallback((next: Tab) => {
+    setTab((current) => {
+      if (next === current) {
+        return current
+      }
+      history.pushState({ tab: next }, '', `#/${next}`)
+      return next
+    })
+  }, [])
+
+  useEffect(() => {
+    if (isFirstTabRender.current) {
+      isFirstTabRender.current = false
+      return
+    }
+    Sentry.metrics.count('tab.view', 1, { attributes: { tab } })
+  }, [tab])
 
   return (
     <div className="app">
@@ -228,10 +268,7 @@ export default function App() {
             type="button"
             className={`tabbar-btn${tab === t.key ? ' is-active' : ''}`}
             aria-current={tab === t.key ? 'page' : undefined}
-            onClick={() => {
-              setTab(t.key)
-              Sentry.metrics.count('tab.view', 1, { attributes: { tab: t.key } })
-            }}
+            onClick={() => navigateToTab(t.key)}
           >
             <TabIcon tab={t.key} />
             <span>{t.label}</span>
