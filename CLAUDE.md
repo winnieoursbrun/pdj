@@ -8,9 +8,11 @@ PWA mobile-only (React + Vite + TS) du programme du festival Les Pluies de Juill
 npm run dev        # dev server
 npm run build      # tsc -b && vite build (+ génération SW/manifest via vite-plugin-pwa)
 npm run preview    # sert dist/ en local
+npm run lint       # oxlint
+npm test           # vitest run (jsdom) — npx vitest run src/lib/schedule.test.ts pour un seul fichier
 ```
 
-Déploiement : push sur `main` → workflow `.github/workflows/deploy.yml` → GitHub Pages (build type "workflow"). Le `base: '/pdj/'` dans `vite.config.ts` doit correspondre au nom du repo.
+Déploiement : push sur `main` → workflow `.github/workflows/deploy.yml` → GitHub Pages (build type "workflow"). Le `base: '/pdj/'` dans `vite.config.ts` doit correspondre au nom du repo. Le build CI passe `SENTRY_AUTH_TOKEN` en secret pour uploader les source maps (`sentryVitePlugin` dans `vite.config.ts`, no-op si le token est absent, ex. en local).
 
 ## Architecture
 
@@ -19,8 +21,11 @@ Déploiement : push sur `main` → workflow `.github/workflows/deploy.yml` → G
 - `src/hooks/useFavorites.ts` — favoris = `Set<string>` d'ids, persisté en localStorage (`pdj26-favorites`)
 - Groupes de copains (timeline partagée sans backend, spec : `docs/superpowers/specs/2026-07-08-group-timeline-design.md`) : `src/lib/group.ts` (code de groupe `MOT-NN`, dérivation PBKDF2→AES-GCM + tag, chiffrement), `src/lib/nostr.ts` (4 relais Nostr publics, événements remplaçables NIP-78 kind 30078), `src/hooks/useGroup.ts` (état par membre publié chiffré `{name, favorites, updatedAt}`, fusion par union → `friendsByEvent`, cache localStorage `pdj26-group*`, identité stable par appareil `pdj26-group-sk`), `src/components/GroupPanel.tsx` (créer/rejoindre, QR via `uqr`, lien `#join=CODE` lu dans `App.tsx`). Dans `TimelineTab`, un bouton « Voir les favoris de mes amis » (actif par défaut) fusionne les événements favoris des amis dans la timeline avec leurs pastilles de pseudo. Les relais ne voient jamais le code ni les données en clair.
 - `src/hooks/useInstallPrompt.ts` — capte `beforeinstallprompt` ; sur iOS affiche un guide manuel
+- Rappels de notification (spec : `docs/superpowers/specs/2026-07-08-event-reminders-design.md`) : `eventStartDate()` dans `src/lib/schedule.ts` calcule la date calendaire réelle 2026 d'un événement (même règle de bascule après minuit que `timeMinutes()`) ; `src/hooks/useReminders.ts` programme des `setTimeout` locaux (pas de push serveur, PWA 100 % statique) 15 min avant chaque favori, avec rattrapage au retour au premier plan (`visibilitychange`) et dédoublonnage via `pdj26-reminders-notified` ; état `ReminderStatus` (`unsupported`/`default`/`denied`/`enabled`/`disabled`) piloté par `pdj26-reminders-enabled` ; `src/components/ReminderBanner.tsx` (bannière d'incitation dans `TimelineTab`, une seule fois, `pdj26-reminders-prompted`) et `src/components/ReminderToggle.tsx` (interrupteur dans la section "L'application" de `FaqTab`).
 - `src/lib/schedule.ts` — constantes jours/catégories, tri chronologique
+- `src/lib/sentry.ts` — `initSentry()` (tracing + session replay + logs), appelé depuis `main.tsx` ; `useReminders` envoie aussi des compteurs `Sentry.metrics.count('reminders.*')`
 - `src/index.css` — tout le style, CSS vanilla avec design tokens
+- `docs/superpowers/{specs,plans}/` — docs de conception (contexte, architecture, cas limites, plan de tests) écrites avant les features non triviales ; à consulter avant de retoucher les groupes de copains ou les rappels, et à imiter pour toute nouvelle feature de cette taille
 
 ## Données (source : PDF officiel du programme)
 
