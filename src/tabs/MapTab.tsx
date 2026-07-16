@@ -1,6 +1,5 @@
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 import { AddressCard } from '../components/AddressCard'
-import { WeatherCard } from '../components/WeatherCard'
 import { TicketsCard } from '../components/TicketsCard'
 import type { Venue, VenueGroup } from '../types'
 import venuesData from '../data/venues.json'
@@ -34,8 +33,6 @@ export function MapTab() {
       </div>
 
       <AddressCard />
-
-      <WeatherCard />
 
       <TicketsCard />
 
