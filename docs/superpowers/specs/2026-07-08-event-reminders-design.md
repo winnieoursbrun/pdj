@@ -40,6 +40,8 @@ API exposée :
 }
 ```
 
+Chaque activation réussie (permission déjà accordée ou tout juste obtenue, y compris à chaque réactivation après un `disable()`) déclenche une notification de confirmation immédiate (« Rappels activés ») pour donner un retour visible à l'utilisateur·ice.
+
 - `unsupported` : `Notification` absent de l'environnement (ex. Safari iOS hors installation).
 - `default` : permission navigateur pas encore demandée.
 - `denied` : permission refusée par le navigateur/l'utilisateur.

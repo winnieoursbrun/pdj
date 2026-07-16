@@ -48,6 +48,38 @@ describe('useReminders status', () => {
     expect(localStorage.getItem('pdj26-reminders-enabled')).toBe('true')
   })
 
+  it('envoie une notification de confirmation quand enable() active les rappels', async () => {
+    MockNotification.requestPermission.mockResolvedValue('granted' as NotificationPermission)
+    const { result } = renderHook(() => useReminders())
+
+    await act(async () => {
+      result.current.enable()
+    })
+
+    expect(MockNotification.instances).toHaveLength(1)
+    expect(MockNotification.instances[0].title).toBe('Rappels activés')
+  })
+
+  it('renvoie une notification de confirmation à chaque réactivation', () => {
+    MockNotification.permission = 'granted'
+    const { result } = renderHook(() => useReminders())
+
+    act(() => {
+      result.current.enable()
+    })
+    expect(MockNotification.instances).toHaveLength(1)
+
+    act(() => {
+      result.current.disable()
+    })
+    act(() => {
+      result.current.enable()
+    })
+
+    expect(MockNotification.instances).toHaveLength(2)
+    expect(MockNotification.instances[1].title).toBe('Rappels activés')
+  })
+
   it('passe à "denied" quand le navigateur refuse la permission', async () => {
     MockNotification.requestPermission.mockResolvedValue('denied' as NotificationPermission)
     const { result } = renderHook(() => useReminders())
@@ -210,13 +242,14 @@ describe('useReminders scheduling', () => {
     })
 
     expect(result.current.status).toBe('enabled')
-    expect(MockNotification.instances).toHaveLength(0)
+    expect(MockNotification.instances).toHaveLength(1)
+    expect(MockNotification.instances[0].title).toBe('Rappels activés')
 
     act(() => {
       vi.advanceTimersByTime(60_000)
     })
-    expect(MockNotification.instances).toHaveLength(1)
-    expect(MockNotification.instances[0].title).toBe('Concert test')
+    expect(MockNotification.instances).toHaveLength(2)
+    expect(MockNotification.instances[1].title).toBe('Concert test')
   })
 
   it('annule le rappel en attente si disable() est appelé', () => {
