@@ -39,6 +39,13 @@ function fireReminder(event: FestEvent) {
   notification.onclick = () => window.focus()
 }
 
+function fireEnabledConfirmation() {
+  const notification = new Notification('Rappels activés', {
+    body: 'Tu seras prévenu·e 15 min avant chaque événement de ta timeline.',
+  })
+  notification.onclick = () => window.focus()
+}
+
 function computeStatus(): ReminderStatus {
   if (typeof Notification === 'undefined') {
     return 'unsupported'
@@ -62,6 +69,7 @@ export function useReminders(favoriteEvents: FestEvent[] = []) {
     if (Notification.permission === 'granted') {
       setEnabledInStorage(true)
       setStatus('enabled')
+      fireEnabledConfirmation()
       Sentry.metrics.count('reminders.enable', 1, { attributes: { result: 'granted' } })
       return
     }
@@ -74,6 +82,7 @@ export function useReminders(favoriteEvents: FestEvent[] = []) {
       if (permission === 'granted') {
         setEnabledInStorage(true)
         setStatus('enabled')
+        fireEnabledConfirmation()
       } else {
         setStatus(permission === 'denied' ? 'denied' : 'default')
       }
