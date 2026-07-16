@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import type { Category, Day, FestEvent } from '../types'
 import { byTime, CATEGORIES, DAYS } from '../lib/schedule'
+import { describeWeatherCode } from '../lib/weather'
+import { useWeather } from '../hooks/useWeather'
 import { EventCard } from '../components/EventCard'
 import eventsData from '../data/events.json'
 
@@ -15,6 +17,7 @@ interface ProgramTabProps {
 export function ProgramTab({ favorites, onToggleFavorite, friendsByEvent }: ProgramTabProps) {
   const [day, setDay] = useState<Day>('ven')
   const [category, setCategory] = useState<Category | 'all'>('all')
+  const { days: weatherDays } = useWeather()
 
   const list = events
     .filter((e) => e.day === day && (category === 'all' || e.category === category))
@@ -23,19 +26,28 @@ export function ProgramTab({ favorites, onToggleFavorite, friendsByEvent }: Prog
   return (
     <section aria-label="Programme">
       <div className="day-picker" role="tablist" aria-label="Jour">
-        {DAYS.map((d) => (
-          <button
-            key={d.key}
-            type="button"
-            role="tab"
-            aria-selected={day === d.key}
-            className={`day-btn day-${d.key}${day === d.key ? ' is-active' : ''}`}
-            onClick={() => setDay(d.key)}
-          >
-            <span className="day-name">{d.label}</span>
-            <span className="day-date">{d.date}</span>
-          </button>
-        ))}
+        {DAYS.map((d) => {
+          const weather = weatherDays.find((w) => w.date === `2026-07-${d.date}`)
+          const { icon, label } = weather ? describeWeatherCode(weather.weatherCode) : { icon: null, label: '' }
+          return (
+            <button
+              key={d.key}
+              type="button"
+              role="tab"
+              aria-selected={day === d.key}
+              className={`day-btn day-${d.key}${day === d.key ? ' is-active' : ''}`}
+              onClick={() => setDay(d.key)}
+            >
+              <span className="day-name">{d.label}</span>
+              <span className="day-date">{d.date}</span>
+              {weather && (
+                <span className="day-weather" role="img" aria-label={label}>
+                  {icon} {Math.round(weather.tempMax)}°
+                </span>
+              )}
+            </button>
+          )
+        })}
       </div>
 
       <div className="chip-row" aria-label="Filtrer par type">

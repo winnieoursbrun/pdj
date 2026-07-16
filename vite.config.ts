@@ -38,6 +38,20 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/api\.open-meteo\.com\//,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'weather-api',
+              networkTimeoutSeconds: 5,
+              expiration: {
+                maxEntries: 8,
+                maxAgeSeconds: 6 * 60 * 60,
+              },
+            },
+          },
+        ],
       },
     }),
     // Uploads source maps to Sentry; no-ops when SENTRY_AUTH_TOKEN isn't set (e.g. local dev).
