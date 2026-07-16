@@ -1,6 +1,6 @@
-import { useState } from 'react'
 import type { FaqItem } from '../types'
 import type { ReminderStatus } from '../hooks/useReminders'
+import { FaqQuestion } from '../components/FaqQuestion'
 import { ReminderToggle } from '../components/ReminderToggle'
 import faqData from '../data/faq.json'
 
@@ -40,25 +40,6 @@ const APP_FAQ: FaqItem[] = [
 const ALL_ITEMS = [...faq, ...APP_FAQ]
 const CATEGORIES = [...new Set(ALL_ITEMS.map((item) => item.category))]
 
-function Question({ item }: { item: FaqItem }) {
-  const [expanded, setExpanded] = useState(false)
-
-  return (
-    <div className="faq-item">
-      <button
-        type="button"
-        className="faq-question"
-        aria-expanded={expanded}
-        onClick={() => setExpanded((v) => !v)}
-      >
-        {item.question}
-        <span className="faq-chevron" aria-hidden="true" />
-      </button>
-      {expanded && <p className="faq-answer">{item.answer}</p>}
-    </div>
-  )
-}
-
 interface FaqTabProps {
   reminderStatus: ReminderStatus
   onEnableReminders: () => void
@@ -74,7 +55,7 @@ export function FaqTab({ reminderStatus, onEnableReminders, onDisableReminders }
             <summary>{category}</summary>
             <div className="faq-list">
               {ALL_ITEMS.filter((item) => item.category === category).map((item) => (
-                <Question key={item.id} item={item} />
+                <FaqQuestion key={item.id} item={item} />
               ))}
             </div>
             {category === "L'application" && (

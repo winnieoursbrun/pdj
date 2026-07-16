@@ -40,3 +40,10 @@ export interface FaqItem {
   question: string
   answer: string
 }
+
+export interface PackingItem {
+  id: string
+  category: string
+  label: string
+  hint: string | null
+}
