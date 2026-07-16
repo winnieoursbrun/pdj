@@ -1,5 +1,5 @@
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
-import { PassCard } from '../components/PassCard'
+import { TicketsCard } from '../components/TicketsCard'
 import type { Venue, VenueGroup } from '../types'
 import venuesData from '../data/venues.json'
 
@@ -50,7 +50,7 @@ export function MapTab() {
         <span className="address-cta">Itinéraire</span>
       </a>
 
-      <PassCard />
+      <TicketsCard />
 
       <div className="legend">
         {GROUPS.map((g) => (
