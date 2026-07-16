@@ -6,17 +6,19 @@ import { useInstallPrompt } from './hooks/useInstallPrompt'
 import { useReminders } from './hooks/useReminders'
 import { FaqTab } from './tabs/FaqTab'
 import { MapTab } from './tabs/MapTab'
+import { PrepTab } from './tabs/PrepTab'
 import { ProgramTab } from './tabs/ProgramTab'
 import { TimelineTab } from './tabs/TimelineTab'
 import eventsData from './data/events.json'
 import type { FestEvent } from './types'
 
-type Tab = 'map' | 'program' | 'timeline' | 'faq'
+type Tab = 'map' | 'program' | 'timeline' | 'prep' | 'faq'
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'map', label: 'Carte' },
   { key: 'program', label: 'Programme' },
   { key: 'timeline', label: 'Ma timeline' },
+  { key: 'prep', label: 'Prépa' },
   { key: 'faq', label: 'FAQ' },
 ]
 
@@ -51,6 +53,31 @@ function TabIcon({ tab }: { tab: Tab }) {
           <path d="M12 12v6.5a1.6 1.6 0 0 1-3.2 0" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
         </svg>
       )
+    case 'prep':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="9" y="2.5" width="6" height="3" rx="1" />
+          <rect
+            x="5"
+            y="4"
+            width="14"
+            height="17"
+            rx="2.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          />
+          <path
+            d="M8 11.2l2 2 4-4.4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path d="M8 16.5h8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      )
     case 'faq':
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -74,7 +101,7 @@ function readJoinCode(): string | null {
 }
 
 function tabFromHash(hash: string): Tab | null {
-  const match = /^#\/(map|program|timeline|faq)$/.exec(hash)
+  const match = /^#\/(map|program|timeline|prep|faq)$/.exec(hash)
   return match ? (match[1] as Tab) : null
 }
 
@@ -252,6 +279,7 @@ export default function App() {
             initialJoinCode={joinCode}
           />
         )}
+        {tab === 'prep' && <PrepTab />}
         {tab === 'faq' && (
           <FaqTab
             reminderStatus={reminders.status}

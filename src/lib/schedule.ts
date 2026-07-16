@@ -12,6 +12,9 @@ export const DAY_LONG: Record<Day, string> = {
   dim: 'Dimanche 19 juillet',
 }
 
+// Ouverture des portes, vendredi 17 juillet à 16h30 (voir la FAQ "Horaires").
+export const FESTIVAL_START = new Date(2026, 6, 17, 16, 30)
+
 export const CATEGORIES: { key: Category; label: string }[] = [
   { key: 'concert', label: 'Concerts' },
   { key: 'spectacle', label: 'Spectacles' },
