@@ -4,11 +4,15 @@ import { useFavorites } from './hooks/useFavorites'
 import { useGroup } from './hooks/useGroup'
 import { useInstallPrompt } from './hooks/useInstallPrompt'
 import { useReminders } from './hooks/useReminders'
+import { useRecapReminder } from './hooks/useRecapReminder'
+import { useSecretTap } from './hooks/useSecretTap'
 import { FaqTab } from './tabs/FaqTab'
 import { MapTab } from './tabs/MapTab'
 import { PrepTab } from './tabs/PrepTab'
 import { ProgramTab } from './tabs/ProgramTab'
 import { TimelineTab } from './tabs/TimelineTab'
+import { RecapScreen } from './components/RecapScreen'
+import { isRecapReady } from './lib/recap'
 import eventsData from './data/events.json'
 import type { FestEvent } from './types'
 
@@ -122,6 +126,9 @@ export default function App() {
   const groupApi = useGroup(favorites)
   const install = useInstallPrompt()
   const showInstall = install.canPrompt || install.needsIosHelp
+  const [showRecap, setShowRecap] = useState(() => isRecapReady())
+  useRecapReminder(reminders.status)
+  const unlockRecap = useSecretTap(() => setShowRecap(true))
 
   // Chaque onglet a sa propre entrée d'historique : sur Android, le bouton
   // retour du système (PWA installée) revient à l'onglet précédent au lieu
@@ -164,7 +171,7 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <div className="app-header-text">
-          <h1 className="wordmark">
+          <h1 className="wordmark" onClick={unlockRecap}>
             Les pluies <span className="wordmark-accent">de juillet</span>
           </h1>
           <p className="app-sub">17 – 19 juillet 2026 · Champrepus</p>
@@ -218,6 +225,10 @@ export default function App() {
           </button>
         )}
       </header>
+
+      {showRecap && (
+        <RecapScreen favoriteEvents={favoriteEvents} onClose={() => setShowRecap(false)} />
+      )}
 
       {iosHelpOpen && (
         <div
