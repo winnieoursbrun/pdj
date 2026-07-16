@@ -85,7 +85,7 @@ p {
 .app {
   max-width: 520px;
   margin: 0 auto;
-  min-height: 100dvh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
 }
