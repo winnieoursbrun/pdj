@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { computeRecapStats, isRecapReady } from './recap'
+import { buildRecapSlides, computeRecapStats, isRecapReady } from './recap'
 import type { FestEvent } from '../types'
 
 function makeEvent(overrides: Partial<FestEvent>): FestEvent {
@@ -78,5 +78,39 @@ describe('computeRecapStats', () => {
     const stats = computeRecapStats(events)
     expect(stats.first?.id).toBe('early')
     expect(stats.last?.id).toBe('late')
+  })
+})
+
+describe('buildRecapSlides', () => {
+  it('ne retourne que l\'intro et un écran vide sans favoris', () => {
+    const slides = buildRecapSlides(computeRecapStats([]))
+    expect(slides.map((s) => s.kind)).toEqual(['intro', 'empty'])
+  })
+
+  it('construit toutes les diapositives quand les données sont disponibles', () => {
+    const events = [
+      makeEvent({ id: 'early', day: 'ven', start: '18:00', category: 'concert', venue: 'Le Parasol' }),
+      makeEvent({ id: 'late', day: 'dim', start: '15:00', category: 'bal', venue: 'Le Village' }),
+    ]
+    const stats = computeRecapStats(events)
+    const slides = buildRecapSlides(stats)
+
+    expect(slides.map((s) => s.kind)).toEqual([
+      'intro',
+      'total',
+      'venue',
+      'category',
+      'first',
+      'last',
+      'outro',
+    ])
+  })
+
+  it('n\'ajoute pas de diapositive "last" en doublon quand il n\'y a qu\'un seul favori', () => {
+    const stats = computeRecapStats([makeEvent({ id: 'solo' })])
+    const slides = buildRecapSlides(stats)
+
+    expect(slides.filter((s) => s.kind === 'last')).toHaveLength(0)
+    expect(slides.filter((s) => s.kind === 'first')).toHaveLength(1)
   })
 })

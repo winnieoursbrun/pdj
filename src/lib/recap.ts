@@ -23,6 +23,51 @@ export type RecapStats = {
   last: FestEvent | null
 }
 
+export type RecapSlide =
+  | { kind: 'intro' }
+  | { kind: 'empty' }
+  | { kind: 'total'; total: number; days: number }
+  | { kind: 'venue'; venue: string; count: number }
+  | { kind: 'category'; label: string; count: number; total: number }
+  | { kind: 'first'; event: FestEvent }
+  | { kind: 'last'; event: FestEvent }
+  | { kind: 'outro'; stats: RecapStats }
+
+export function buildRecapSlides(stats: RecapStats): RecapSlide[] {
+  if (stats.total === 0) {
+    return [{ kind: 'intro' }, { kind: 'empty' }]
+  }
+
+  const slides: RecapSlide[] = [
+    { kind: 'intro' },
+    { kind: 'total', total: stats.total, days: stats.daysAttended },
+  ]
+
+  if (stats.topVenue) {
+    slides.push({ kind: 'venue', venue: stats.topVenue.venue, count: stats.topVenue.count })
+  }
+
+  const topCategory = stats.byCategory[0]
+  if (topCategory) {
+    slides.push({
+      kind: 'category',
+      label: topCategory.label,
+      count: topCategory.count,
+      total: stats.total,
+    })
+  }
+
+  if (stats.first) {
+    slides.push({ kind: 'first', event: stats.first })
+  }
+  if (stats.last && stats.last.id !== stats.first?.id) {
+    slides.push({ kind: 'last', event: stats.last })
+  }
+
+  slides.push({ kind: 'outro', stats })
+  return slides
+}
+
 export function computeRecapStats(favoriteEvents: FestEvent[]): RecapStats {
   const sorted = [...favoriteEvents].sort(byTime)
 
