@@ -224,7 +224,7 @@ p {
   width: 100%;
   max-width: 520px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   background: var(--card);
   border-top: 2.5px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom);
@@ -928,6 +928,158 @@ p {
   line-height: 1.55;
   color: var(--muted);
   white-space: pre-line;
+}
+
+/* ---------- Préparation du festival ---------- */
+.prep-heading {
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin: 22px 0 10px;
+}
+
+.prep-heading:first-of-type {
+  margin-top: 4px;
+}
+
+.countdown-card {
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--sticker);
+  padding: 16px;
+  text-align: center;
+}
+
+.countdown-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 2px;
+  background: var(--yellow);
+  color: #141414;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--sticker-sm);
+}
+
+.countdown-value {
+  font-family: var(--display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.countdown-unit-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.countdown-started {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Liste à préparer, une couleur de marqueur par catégorie */
+.packing-journee summary::before {
+  background: var(--yellow);
+}
+.packing-soir summary::before {
+  background: var(--peri);
+}
+.packing-camping summary::before {
+  background: var(--green);
+}
+.packing-pluie summary::before {
+  background: var(--sky);
+}
+
+.packing-count {
+  margin-left: auto;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: none;
+}
+
+.packing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 10px 10px;
+}
+
+.packing-item {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 4px;
+  text-align: left;
+}
+
+.packing-checkbox {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border: 2px solid var(--line);
+  border-radius: 5px;
+  background: var(--paper);
+  position: relative;
+}
+
+.packing-checkbox.is-checked {
+  background: var(--green);
+}
+
+.packing-checkbox.is-checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 6px;
+  height: 11px;
+  border-right: 2px solid var(--line);
+  border-bottom: 2px solid var(--line);
+  transform: rotate(40deg);
+}
+
+.packing-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.packing-item-text .is-done {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.packing-hint {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--muted);
 }
 
 /* ---------- Rappels de notification ---------- */

@@ -1,4 +1,5 @@
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
+import { AddressCard } from '../components/AddressCard'
 import { TicketsCard } from '../components/TicketsCard'
 import type { Venue, VenueGroup } from '../types'
 import venuesData from '../data/venues.json'
@@ -11,16 +12,6 @@ const GROUPS: { key: VenueGroup; label: string }[] = [
   { key: 'bienetre', label: 'Bien-être' },
   { key: 'vente', label: 'Boutique, bar & restauration' },
 ]
-
-const ADDRESS = '290 Route des Diligences, 50800 Champrepus'
-
-// Safari iOS n'a pas de sélecteur d'appli pour geo: — Apple Plans y est la seule
-// option qui fonctionne. Partout ailleurs, geo: laisse le téléphone proposer
-// son propre choix (Android affiche un sélecteur d'apps installées).
-const IS_IOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
-const MAPS_HREF = IS_IOS
-  ? `https://maps.apple.com/?q=${encodeURIComponent(ADDRESS)}`
-  : `geo:0,0?q=${encodeURIComponent(ADDRESS)}`
 
 export function MapTab() {
   return (
@@ -41,14 +32,7 @@ export function MapTab() {
         <p className="map-hint">Pince ou double-tape pour zoomer</p>
       </div>
 
-      <a className="address-card" href={MAPS_HREF}>
-        <svg viewBox="0 0 24 24" aria-hidden="true" className="address-pin">
-          <path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-          <circle cx="12" cy="9" r="2.4" fill="none" stroke="currentColor" strokeWidth="1.8" />
-        </svg>
-        <span className="address-text">{ADDRESS}</span>
-        <span className="address-cta">Itinéraire</span>
-      </a>
+      <AddressCard />
 
       <TicketsCard />
 
