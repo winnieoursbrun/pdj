@@ -13,6 +13,9 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // On enregistre le SW nous-mêmes via virtual:pwa-register (src/registerSW.ts)
+      // pour catcher les échecs de register() au lieu de laisser une unhandled rejection.
+      injectRegister: null,
       includeAssets: ['favicon.svg', 'map.png'],
       manifest: {
         name: 'Les Pluies de Juillet 2026',
