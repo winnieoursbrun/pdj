@@ -62,3 +62,19 @@ export function eventStartDate(e: FestEvent): Date {
   const date = hours < 5 ? Number(dayInfo.date) + 1 : Number(dayInfo.date)
   return new Date(2026, 6, date, hours, minutes)
 }
+
+// Comme les horaires de fin peuvent aussi déborder après minuit (ex. 23:00 – 01:00),
+// on ajoute un jour si la fin tombe avant (ou à) le début.
+export function eventEndDate(e: FestEvent): Date {
+  const start = eventStartDate(e)
+  if (!e.end) {
+    return start
+  }
+  const [hours, minutes] = e.end.split(':').map(Number)
+  const end = new Date(start)
+  end.setHours(hours, minutes, 0, 0)
+  if (end <= start) {
+    end.setDate(end.getDate() + 1)
+  }
+  return end
+}
