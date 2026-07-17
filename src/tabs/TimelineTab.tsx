@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Day, FestEvent } from '../types'
-import { byTime, DAY_LONG, DAYS, formatRange } from '../lib/schedule'
+import { byTime, DAY_LONG, DAYS, eventEndDate, formatRange } from '../lib/schedule'
 import { UmbrellaButton } from '../components/Umbrella'
 import { ReminderBanner } from '../components/ReminderBanner'
 import { GroupPanel } from '../components/GroupPanel'
@@ -58,6 +58,16 @@ export function TimelineTab({
   const visibleIds = new Set([...favorites, ...friendFavoriteIds])
   const list = events.filter((e) => visibleIds.has(e.id)).sort(byTime)
 
+  const itemRefs = useRef(new Map<string, HTMLLIElement>())
+
+  useEffect(() => {
+    const now = Date.now()
+    const next = list.find((e) => eventEndDate(e).getTime() > now)
+    const target = next && itemRefs.current.get(next.id)
+    target?.scrollIntoView({ block: 'start' })
+    // Ne scroller qu'à l'ouverture de l'onglet (le composant est remonté à chaque clic).
+  }, [])
+
   if (list.length === 0) {
     return (
       <section className="timeline-empty" aria-label="Ma timeline">
@@ -104,6 +114,13 @@ export function TimelineTab({
               return (
                 <li
                   key={e.id}
+                  ref={(el) => {
+                    if (el) {
+                      itemRefs.current.set(e.id, el)
+                    } else {
+                      itemRefs.current.delete(e.id)
+                    }
+                  }}
                   className={`tl-item cat-${e.category}${isMine ? '' : ' tl-item-friend'}`}
                 >
                   <span className="tl-dot" aria-hidden="true" />
