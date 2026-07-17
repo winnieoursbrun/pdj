@@ -22,6 +22,7 @@ interface TimelineTabProps {
   onEnableReminders: () => void
   groupApi: GroupApi
   initialJoinCode: string | null
+  scrollToken: number
 }
 
 export function TimelineTab({
@@ -31,6 +32,7 @@ export function TimelineTab({
   onEnableReminders,
   groupApi,
   initialJoinCode,
+  scrollToken,
 }: TimelineTabProps) {
   const [showFriends, setShowFriends] = useState(loadShowFriends)
 
@@ -65,8 +67,9 @@ export function TimelineTab({
     const next = list.find((e) => eventEndDate(e).getTime() > now)
     const target = next && itemRefs.current.get(next.id)
     target?.scrollIntoView({ block: 'start' })
-    // Ne scroller qu'à l'ouverture de l'onglet (le composant est remonté à chaque clic).
-  }, [])
+    // Se redéclenche au (re)montage de l'onglet, et aussi quand on clique sur l'onglet
+    // alors qu'on y est déjà (scrollToken change à chaque clic sur "Ma timeline").
+  }, [scrollToken])
 
   if (list.length === 0) {
     return (
