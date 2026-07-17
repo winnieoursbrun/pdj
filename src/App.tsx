@@ -113,6 +113,7 @@ export default function App() {
   const initialTabRef = useRef(tab)
   const isFirstTabRender = useRef(true)
   const [iosHelpOpen, setIosHelpOpen] = useState(false)
+  const [timelineScrollToken, setTimelineScrollToken] = useState(0)
   const { favorites, toggle } = useFavorites()
   const favoriteEvents = useMemo(
     () => events.filter((e) => favorites.has(e.id)),
@@ -277,6 +278,7 @@ export default function App() {
             onEnableReminders={reminders.enable}
             groupApi={groupApi}
             initialJoinCode={joinCode}
+            scrollToken={timelineScrollToken}
           />
         )}
         {tab === 'prep' && <PrepTab />}
@@ -296,7 +298,12 @@ export default function App() {
             type="button"
             className={`tabbar-btn${tab === t.key ? ' is-active' : ''}`}
             aria-current={tab === t.key ? 'page' : undefined}
-            onClick={() => navigateToTab(t.key)}
+            onClick={() => {
+              navigateToTab(t.key)
+              if (t.key === 'timeline') {
+                setTimelineScrollToken((n) => n + 1)
+              }
+            }}
           >
             <TabIcon tab={t.key} />
             <span>{t.label}</span>
