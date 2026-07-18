@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Day, FestEvent } from '../types'
-import { byTime, DAY_LONG, DAYS, eventEndDate, formatRange, isEventOngoing } from '../lib/schedule'
+import {
+  byTime,
+  DAY_LONG,
+  DAYS,
+  eventEndDate,
+  formatRange,
+  isAllDay,
+  isEventOngoing,
+} from '../lib/schedule'
 import { UmbrellaButton } from '../components/Umbrella'
 import { ReminderBanner } from '../components/ReminderBanner'
 import { GroupPanel } from '../components/GroupPanel'
@@ -67,7 +75,10 @@ export function TimelineTab({
 
   useEffect(() => {
     const now = Date.now()
-    const next = list.find((e) => eventEndDate(e).getTime() > now)
+    // Les animations en continu commencent tôt et finissent tard : sans ce filtre,
+    // elles captent le scroll toute la journée au lieu de l'événement en cours.
+    const upcoming = list.filter((e) => eventEndDate(e).getTime() > now)
+    const next = upcoming.find((e) => !isAllDay(e)) ?? upcoming[0]
     const target = next && itemRefs.current.get(next.id)
     target?.scrollIntoView({ block: 'start' })
     // Se redéclenche au (re)montage de l'onglet, et aussi quand on clique sur l'onglet

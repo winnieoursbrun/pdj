@@ -74,6 +74,14 @@ export function isEventOngoing(e: FestEvent, now: number): boolean {
   return now >= start && now < end
 }
 
+// Les animations « en continu » (stands du village, espace familles…) couvrent
+// toute la journée : elles ne doivent pas capter le scroll vers l'événement en cours.
+const ALL_DAY_MS = 6 * 60 * 60 * 1000
+
+export function isAllDay(e: FestEvent): boolean {
+  return eventEndDate(e).getTime() - eventStartDate(e).getTime() >= ALL_DAY_MS
+}
+
 // Comme les horaires de fin peuvent aussi déborder après minuit (ex. 23:00 – 01:00),
 // on ajoute un jour si la fin tombe avant (ou à) le début.
 export function eventEndDate(e: FestEvent): Date {

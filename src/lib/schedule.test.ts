@@ -4,6 +4,7 @@ import {
   eventEndDate,
   eventStartDate,
   formatRange,
+  isAllDay,
   isEventOngoing,
   timeMinutes,
 } from './schedule'
@@ -97,6 +98,32 @@ describe('eventStartDate', () => {
   it('lève une erreur pour un jour inconnu', () => {
     const event = makeEvent({ day: 'lun' as Day })
     expect(() => eventStartDate(event)).toThrow('Unknown day: lun')
+  })
+})
+
+describe('isAllDay', () => {
+  it('repère une animation en continu sur toute la journée', () => {
+    expect(isAllDay(makeEvent({ start: '10:00', end: '18:30' }))).toBe(true)
+  })
+
+  it('accepte pile 6 heures comme journée entière', () => {
+    expect(isAllDay(makeEvent({ start: '10:00', end: '16:00' }))).toBe(true)
+  })
+
+  it('ne repère pas un créneau classique', () => {
+    expect(isAllDay(makeEvent({ start: '21:00', end: '22:30' }))).toBe(false)
+  })
+
+  it('ne repère pas une nocturne de quelques heures', () => {
+    expect(isAllDay(makeEvent({ day: 'ven', start: '17:00', end: '21:00' }))).toBe(false)
+  })
+
+  it('ne repère pas un événement sans horaire de fin', () => {
+    expect(isAllDay(makeEvent({ end: null }))).toBe(false)
+  })
+
+  it('ne repère pas un set de nuit qui déborde après minuit', () => {
+    expect(isAllDay(makeEvent({ start: '23:00', end: '01:00' }))).toBe(false)
   })
 })
 
