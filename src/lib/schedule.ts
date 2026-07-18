@@ -66,12 +66,17 @@ export function eventStartDate(e: FestEvent): Date {
 // Fenêtre de présence par défaut pour les événements sans horaire de fin publié.
 const DEFAULT_ONGOING_MS = 60 * 60_000
 
-// Un événement est « en cours » entre son début et sa fin (ou début + 1 h sans
-// horaire de fin) : fenêtre pendant laquelle on peut dire au groupe qu'on y est.
+// Marge de part et d'autre : on peut se signaler déjà installé devant la scène
+// un peu en avance, et la présence survit le temps de traîner à la sortie.
+const PRESENCE_MARGIN_MS = 15 * 60_000
+
+// Un événement est « en cours » de 15 min avant son début à 15 min après sa fin
+// (ou début + 1 h sans horaire de fin) : fenêtre pendant laquelle on peut dire
+// au groupe qu'on y est.
 export function isEventOngoing(e: FestEvent, now: number): boolean {
   const start = eventStartDate(e).getTime()
   const end = e.end ? eventEndDate(e).getTime() : start + DEFAULT_ONGOING_MS
-  return now >= start && now < end
+  return now >= start - PRESENCE_MARGIN_MS && now < end + PRESENCE_MARGIN_MS
 }
 
 // Les animations « en continu » (stands du village, espace familles…) couvrent
