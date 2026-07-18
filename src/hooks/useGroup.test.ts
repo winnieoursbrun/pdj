@@ -1,8 +1,15 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { decryptState, deriveGroupKeys, encryptState, type MemberState } from '../lib/group'
 import { publishState } from '../lib/nostr'
 import { useGroup } from './useGroup'
+
+// Ids réels stables du programme (voir events.json), qui se chevauchent
+// le vendredi à 17h30 : LARZAC ! (17:00 – 18:30) et la nocturne (17:00 – 21:30).
+const LARZAC = 'larzac-ven-1700'
+const NOCTURNE = 'nocturne-exposantes-ven-1700'
+const DURING_BOTH = new Date(2026, 6, 17, 17, 30)
+const AFTER_FESTIVAL = new Date(2026, 6, 21, 12, 0)
 
 const subscriptions: {
   tag: string
@@ -77,7 +84,9 @@ describe('useGroup', () => {
 
     await sendFromFriend(code, 'friend-pk', makeState())
     await waitFor(() => expect(result.current.others).toHaveLength(1))
-    expect(result.current.friendsByEvent.get('ev-1')).toEqual(['Max'])
+    expect(result.current.friendsByEvent.get('ev-1')).toEqual([
+      { name: 'Max', here: false },
+    ])
   })
 
   it('ignore un état plus vieux que le cache', async () => {
@@ -134,7 +143,9 @@ describe('useGroup', () => {
 
     await sendFromFriend(code, 'friend-pk', makeState({ updatedAt: 1000 }))
     await waitFor(() => expect(result.current.others).toHaveLength(1))
-    expect(result.current.friendsByEvent.get('ev-1')).toEqual(['Max'])
+    expect(result.current.friendsByEvent.get('ev-1')).toEqual([
+      { name: 'Max', here: false },
+    ])
 
     await sendFromFriend(
       code,
@@ -197,7 +208,9 @@ describe('useGroup', () => {
 
     const second = renderHook(() => useGroup(new Set()))
     expect(second.result.current.others).toHaveLength(1)
-    expect(second.result.current.friendsByEvent.get('ev-1')).toEqual(['Max'])
+    expect(second.result.current.friendsByEvent.get('ev-1')).toEqual([
+      { name: 'Max', here: false },
+    ])
   })
 
   it('quitter le groupe efface tout', async () => {
@@ -212,5 +225,117 @@ describe('useGroup', () => {
     expect(result.current.others).toHaveLength(0)
     expect(localStorage.getItem('pdj26-group')).toBeNull()
     expect(localStorage.getItem('pdj26-group-members')).toBeNull()
+  })
+})
+
+describe('useGroup — présence « j’y suis »', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    subscriptions.length = 0
+    vi.clearAllMocks()
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(DURING_BOTH)
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('checkIn persiste et ne garde qu’un seul événement à la fois', () => {
+    const { result } = renderHook(() => useGroup(new Set()))
+    act(() => {
+      result.current.create('Léa')
+    })
+
+    act(() => {
+      result.current.checkIn(LARZAC)
+    })
+    expect(result.current.myEventId).toBe(LARZAC)
+    expect(localStorage.getItem('pdj26-group-at')).toBe(LARZAC)
+
+    act(() => {
+      result.current.checkIn(NOCTURNE)
+    })
+    expect(result.current.myEventId).toBe(NOCTURNE)
+    expect(localStorage.getItem('pdj26-group-at')).toBe(NOCTURNE)
+
+    act(() => {
+      result.current.checkIn(null)
+    })
+    expect(result.current.myEventId).toBeNull()
+    expect(localStorage.getItem('pdj26-group-at')).toBeNull()
+  })
+
+  it('une présence sur un événement terminé est purgée immédiatement', () => {
+    vi.setSystemTime(AFTER_FESTIVAL)
+    const { result } = renderHook(() => useGroup(new Set()))
+    act(() => {
+      result.current.create('Léa')
+    })
+    act(() => {
+      result.current.checkIn(LARZAC)
+    })
+    expect(result.current.myEventId).toBeNull()
+    expect(localStorage.getItem('pdj26-group-at')).toBeNull()
+  })
+
+  it('recharge ma présence depuis le stockage tant que l’événement est en cours', () => {
+    localStorage.setItem('pdj26-group-at', LARZAC)
+    const { result } = renderHook(() => useGroup(new Set()))
+    expect(result.current.myEventId).toBe(LARZAC)
+  })
+
+  it('ignore une présence stockée dont l’événement est passé', () => {
+    vi.setSystemTime(AFTER_FESTIVAL)
+    localStorage.setItem('pdj26-group-at', LARZAC)
+    const { result } = renderHook(() => useGroup(new Set()))
+    expect(result.current.myEventId).toBeNull()
+  })
+
+  it('marque l’ami présent (here) sur son événement en cours, même hors favoris', async () => {
+    const { result } = renderHook(() => useGroup(new Set()))
+    let code = ''
+    act(() => {
+      code = result.current.create('Léa')
+    })
+    await waitFor(() => expect(subscriptions.length).toBeGreaterThan(0))
+
+    await sendFromFriend(code, 'friend-pk', makeState({ favorites: ['ev-1'], at: LARZAC }))
+    await waitFor(() => expect(result.current.others).toHaveLength(1))
+    expect(result.current.friendsByEvent.get(LARZAC)).toEqual([
+      { name: 'Max', here: true },
+    ])
+    expect(result.current.friendsByEvent.get('ev-1')).toEqual([
+      { name: 'Max', here: false },
+    ])
+  })
+
+  it('n’affiche pas une présence d’ami sur un événement terminé', async () => {
+    vi.setSystemTime(AFTER_FESTIVAL)
+    const { result } = renderHook(() => useGroup(new Set()))
+    let code = ''
+    act(() => {
+      code = result.current.create('Léa')
+    })
+    await waitFor(() => expect(subscriptions.length).toBeGreaterThan(0))
+
+    await sendFromFriend(code, 'friend-pk', makeState({ favorites: [], at: LARZAC }))
+    await waitFor(() => expect(result.current.others).toHaveLength(1))
+    expect(result.current.friendsByEvent.get(LARZAC)).toBeUndefined()
+  })
+
+  it('quitter le groupe efface aussi ma présence', () => {
+    const { result } = renderHook(() => useGroup(new Set()))
+    act(() => {
+      result.current.create('Léa')
+    })
+    act(() => {
+      result.current.checkIn(LARZAC)
+    })
+    act(() => {
+      result.current.leave()
+    })
+    expect(result.current.myEventId).toBeNull()
+    expect(localStorage.getItem('pdj26-group-at')).toBeNull()
   })
 })

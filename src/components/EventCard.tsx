@@ -2,15 +2,25 @@ import { useState } from 'react'
 import type { FestEvent } from '../types'
 import { CATEGORY_LABEL, formatRange } from '../lib/schedule'
 import { UmbrellaButton } from './Umbrella'
+import { FriendChips, PresenceButton } from './GroupBadges'
+import type { FriendPresence } from '../hooks/useGroup'
 
 interface EventCardProps {
   event: FestEvent
   isFavorite: boolean
   onToggleFavorite: (id: string) => void
-  friends?: string[]
+  friends?: FriendPresence[]
+  /** Fourni quand on est en groupe et que l'événement est en cours : bouton « J'y suis ». */
+  presence?: { here: boolean; onToggle: () => void } | null
 }
 
-export function EventCard({ event, isFavorite, onToggleFavorite, friends }: EventCardProps) {
+export function EventCard({
+  event,
+  isFavorite,
+  onToggleFavorite,
+  friends,
+  presence,
+}: EventCardProps) {
   const [expanded, setExpanded] = useState(false)
   const details = event.description ?? event.subtype
 
@@ -34,15 +44,16 @@ export function EventCard({ event, isFavorite, onToggleFavorite, friends }: Even
           onToggle={() => onToggleFavorite(event.id)}
         />
       </div>
-      {friends && friends.length > 0 && (
+      {((friends && friends.length > 0) || presence) && (
         <div className="card-group-row">
-          <span className="friend-chips">
-            {friends.map((n) => (
-              <span key={n} className="friend-chip">
-                {n}
-              </span>
-            ))}
-          </span>
+          {presence && (
+            <PresenceButton
+              here={presence.here}
+              eventTitle={event.title}
+              onToggle={presence.onToggle}
+            />
+          )}
+          {friends && friends.length > 0 && <FriendChips friends={friends} />}
         </div>
       )}
       {event.description && (

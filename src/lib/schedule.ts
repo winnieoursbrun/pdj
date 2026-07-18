@@ -63,6 +63,17 @@ export function eventStartDate(e: FestEvent): Date {
   return new Date(2026, 6, date, hours, minutes)
 }
 
+// Fenêtre de présence par défaut pour les événements sans horaire de fin publié.
+const DEFAULT_ONGOING_MS = 60 * 60_000
+
+// Un événement est « en cours » entre son début et sa fin (ou début + 1 h sans
+// horaire de fin) : fenêtre pendant laquelle on peut dire au groupe qu'on y est.
+export function isEventOngoing(e: FestEvent, now: number): boolean {
+  const start = eventStartDate(e).getTime()
+  const end = e.end ? eventEndDate(e).getTime() : start + DEFAULT_ONGOING_MS
+  return now >= start && now < end
+}
+
 // Comme les horaires de fin peuvent aussi déborder après minuit (ex. 23:00 – 01:00),
 // on ajoute un jour si la fin tombe avant (ou à) le début.
 export function eventEndDate(e: FestEvent): Date {

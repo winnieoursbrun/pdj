@@ -1,8 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { ProgramTab } from './ProgramTab'
 import { byTime } from '../lib/schedule'
 import type { DayWeather } from '../lib/weather'
+import type { FriendPresence, GroupApi } from '../hooks/useGroup'
 import type { FestEvent } from '../types'
 import eventsData from '../data/events.json'
 
@@ -14,13 +15,27 @@ vi.mock('../hooks/useWeather', () => ({
   useWeather: () => ({ status: 'ok', days: weatherDays }),
 }))
 
+function fakeGroupApi(overrides: Partial<GroupApi> = {}): GroupApi {
+  return {
+    group: null,
+    others: [],
+    create: vi.fn(() => 'PLUIE-42'),
+    join: vi.fn(),
+    leave: vi.fn(),
+    friendsByEvent: new Map<string, FriendPresence[]>(),
+    myEventId: null,
+    checkIn: vi.fn(),
+    ...overrides,
+  } as GroupApi
+}
+
 function renderTab(overrides: Partial<Parameters<typeof ProgramTab>[0]> = {}) {
   const onToggleFavorite = vi.fn()
   const utils = render(
     <ProgramTab
       favorites={new Set<string>()}
       onToggleFavorite={onToggleFavorite}
-      friendsByEvent={new Map()}
+      groupApi={fakeGroupApi()}
       {...overrides}
     />,
   )
@@ -172,5 +187,37 @@ describe('ProgramTab — favoris', () => {
     const first = events.filter((e) => e.day === 'ven').sort(byTime)[0]
     fireEvent.click(screen.getByRole('button', { name: `Ajouter « ${first.title} » à ma timeline` }))
     expect(onToggleFavorite).toHaveBeenCalledWith(first.id)
+  })
+})
+
+describe('ProgramTab — présence « j’y suis »', () => {
+  // MIOSSEC, vendredi 21:35 – 22:35 (id réel du programme)
+  const MIOSSEC = 'miossec-ven-2135'
+
+  beforeEach(() => {
+    localStorage.clear()
+    weatherDays = []
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date(2026, 6, 17, 22, 0))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('propose « J’y suis » sur l’événement en cours quand on est en groupe', () => {
+    const groupApi = fakeGroupApi({ group: { code: 'PLUIE-42', name: 'Moi' } })
+    renderTab({ groupApi })
+
+    const btn = screen.getByRole('button', {
+      name: 'Dire à mon groupe que je suis à « MIOSSEC »',
+    })
+    fireEvent.click(btn)
+    expect(groupApi.checkIn).toHaveBeenCalledWith(MIOSSEC)
+  })
+
+  it('ne propose rien hors groupe', () => {
+    renderTab()
+    expect(screen.queryByRole('button', { name: /je suis à/ })).toBeNull()
   })
 })

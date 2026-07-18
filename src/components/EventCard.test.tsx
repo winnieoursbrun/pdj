@@ -116,11 +116,34 @@ describe('EventCard — favori et copains', () => {
         event={event}
         isFavorite={false}
         onToggleFavorite={vi.fn()}
-        friends={['Léa', 'Max']}
+        friends={[
+          { name: 'Léa', here: false },
+          { name: 'Max', here: false },
+        ]}
       />,
     )
     expect(screen.getByText('Léa')).toHaveClass('friend-chip')
     expect(screen.getByText('Max')).toHaveClass('friend-chip')
+  })
+
+  it('met en avant la pastille d’un copain présent, listé en premier', () => {
+    render(
+      <EventCard
+        event={makeEvent()}
+        isFavorite={false}
+        onToggleFavorite={vi.fn()}
+        friends={[
+          { name: 'Léa', here: false },
+          { name: 'Max', here: true },
+        ]}
+      />,
+    )
+    expect(screen.getByText('Max')).toHaveClass('friend-chip-here')
+    expect(screen.getByText('Léa')).not.toHaveClass('friend-chip-here')
+    const names = screen
+      .getAllByText(/^(Léa|Max)$/)
+      .map((el) => el.textContent)
+    expect(names).toEqual(['Max', 'Léa'])
   })
 
   it('n’affiche pas la rangée copains sans amis', () => {
@@ -128,5 +151,46 @@ describe('EventCard — favori et copains', () => {
       <EventCard event={makeEvent()} isFavorite={false} onToggleFavorite={vi.fn()} friends={[]} />,
     )
     expect(container.querySelector('.card-group-row')).not.toBeInTheDocument()
+  })
+})
+
+describe('EventCard — présence « j’y suis »', () => {
+  it('affiche le bouton et remonte le toggle quand presence est fournie', () => {
+    const onToggle = vi.fn()
+    render(
+      <EventCard
+        event={makeEvent({ title: 'MIOSSEC' })}
+        isFavorite={false}
+        onToggleFavorite={vi.fn()}
+        presence={{ here: false, onToggle }}
+      />,
+    )
+    const btn = screen.getByRole('button', {
+      name: 'Dire à mon groupe que je suis à « MIOSSEC »',
+    })
+    expect(btn).toHaveTextContent("J'y suis")
+    fireEvent.click(btn)
+    expect(onToggle).toHaveBeenCalled()
+  })
+
+  it('reflète l’état « Tu y es »', () => {
+    render(
+      <EventCard
+        event={makeEvent({ title: 'MIOSSEC' })}
+        isFavorite={false}
+        onToggleFavorite={vi.fn()}
+        presence={{ here: true, onToggle: vi.fn() }}
+      />,
+    )
+    const btn = screen.getByRole('button', {
+      name: 'Ne plus signaler ma présence à « MIOSSEC »',
+    })
+    expect(btn).toHaveAttribute('aria-pressed', 'true')
+    expect(btn).toHaveTextContent('Tu y es')
+  })
+
+  it('n’affiche pas de bouton sans presence (hors groupe ou événement pas en cours)', () => {
+    renderCard()
+    expect(screen.queryByRole('button', { name: /je suis à/ })).toBeNull()
   })
 })

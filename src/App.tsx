@@ -264,11 +264,7 @@ export default function App() {
       <main className="app-main">
         {tab === 'map' && <MapTab />}
         {tab === 'program' && (
-          <ProgramTab
-            favorites={favorites}
-            onToggleFavorite={toggle}
-            friendsByEvent={groupApi.friendsByEvent}
-          />
+          <ProgramTab favorites={favorites} onToggleFavorite={toggle} groupApi={groupApi} />
         )}
         {tab === 'timeline' && (
           <TimelineTab

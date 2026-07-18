@@ -16,11 +16,38 @@ import {
   skToHex,
   subscribeGroup,
 } from '../lib/nostr'
+import { isEventOngoing } from '../lib/schedule'
+import type { FestEvent } from '../types'
+import eventsData from '../data/events.json'
 
 const GROUP_KEY = 'pdj26-group'
 const SK_KEY = 'pdj26-group-sk'
 const MEMBERS_KEY = 'pdj26-group-members'
+const AT_KEY = 'pdj26-group-at'
 const PUBLISH_DEBOUNCE_MS = 2000
+const PRESENCE_TICK_MS = 60_000
+
+const eventById = new Map((eventsData as FestEvent[]).map((e) => [e.id, e]))
+
+/** Pastille d'un ami sur un événement : favori, et éventuellement présent en ce moment. */
+export interface FriendPresence {
+  name: string
+  here: boolean
+}
+
+// Une présence n'est valide que pendant l'événement : au-delà, elle est
+// considérée comme expirée (pas de « il y est encore » à 4 h du matin).
+function ongoingEventId(id: string | null | undefined, now: number): string | null {
+  if (!id) {
+    return null
+  }
+  const event = eventById.get(id)
+  return event && isEventOngoing(event, now) ? id : null
+}
+
+function loadMyEventId(): string | null {
+  return ongoingEventId(localStorage.getItem(AT_KEY), Date.now())
+}
 
 // Identité stable de l'appareil : réutilisée quand on quitte/rejoint un
 // groupe, pour que notre événement remplaçable écrase l'ancien au lieu de
@@ -76,6 +103,8 @@ export function useGroup(favorites: Set<string>) {
   const [stored, setStored] = useState<StoredGroup | null>(loadStored)
   const [members, setMembers] = useState<Record<string, MemberState>>(loadMembers)
   const [syncTick, setSyncTick] = useState(0)
+  const [myEventId, setMyEventId] = useState<string | null>(loadMyEventId)
+  const [presenceTick, setPresenceTick] = useState(0)
 
   const myPubkey = useMemo(
     () => (stored ? getPublicKey(skFromHex(stored.sk)) : null),
@@ -152,6 +181,7 @@ export function useGroup(favorites: Set<string>) {
           name: stored.name,
           favorites: [...favorites],
           updatedAt: Date.now(),
+          at: myEventId ?? undefined,
         }
         const payload = await encryptState(key, state)
         await publishState(skFromHex(stored.sk), tag, payload)
@@ -160,13 +190,44 @@ export function useGroup(favorites: Set<string>) {
     return () => {
       clearTimeout(timer)
     }
-  }, [stored, favorites, syncTick])
+  }, [stored, favorites, myEventId, syncTick])
+
+  // Horloge de présence : fait expirer les « j'y suis » (les miens comme ceux
+  // des amis) quand l'événement se termine, sans attendre une republication.
+  useEffect(() => {
+    if (!stored) {
+      return
+    }
+    const timer = setInterval(() => setPresenceTick((t) => t + 1), PRESENCE_TICK_MS)
+    return () => {
+      clearInterval(timer)
+    }
+  }, [stored])
+
+  const checkIn = useCallback((eventId: string | null) => {
+    if (eventId) {
+      localStorage.setItem(AT_KEY, eventId)
+      Sentry.metrics.count('group.checkin', 1)
+    } else {
+      localStorage.removeItem(AT_KEY)
+    }
+    // Un seul événement à la fois : la nouvelle présence remplace l'ancienne.
+    setMyEventId(eventId)
+  }, [])
+
+  useEffect(() => {
+    if (myEventId && !ongoingEventId(myEventId, Date.now())) {
+      checkIn(null)
+    }
+  }, [myEventId, presenceTick, checkIn])
 
   const enter = useCallback((code: string, name: string) => {
     const next: StoredGroup = { code, name, sk: deviceSk() }
     localStorage.setItem(GROUP_KEY, JSON.stringify(next))
     localStorage.removeItem(MEMBERS_KEY)
+    localStorage.removeItem(AT_KEY)
     setMembers({})
+    setMyEventId(null)
     setStored(next)
   }, [])
 
@@ -206,8 +267,10 @@ export function useGroup(favorites: Set<string>) {
     }
     localStorage.removeItem(GROUP_KEY)
     localStorage.removeItem(MEMBERS_KEY)
+    localStorage.removeItem(AT_KEY)
     setStored(null)
     setMembers({})
+    setMyEventId(null)
   }, [stored])
 
   // Les copains = tous les états reçus sauf le mien.
@@ -227,14 +290,23 @@ export function useGroup(favorites: Set<string>) {
   }, [stored, others.length])
 
   const friendsByEvent = useMemo(() => {
-    const map = new Map<string, string[]>()
+    // presenceTick force un recalcul périodique : la présence d'un ami expire
+    // à la fin de l'événement même sans nouvel événement reçu du relais.
+    void presenceTick
+    const now = Date.now()
+    const map = new Map<string, FriendPresence[]>()
     for (const member of others) {
-      for (const id of member.favorites) {
-        map.set(id, [...(map.get(id) ?? []), member.name])
+      const here = ongoingEventId(member.at, now)
+      const ids = new Set(member.favorites)
+      if (here) {
+        ids.add(here)
+      }
+      for (const id of ids) {
+        map.set(id, [...(map.get(id) ?? []), { name: member.name, here: id === here }])
       }
     }
     return map
-  }, [others])
+  }, [others, presenceTick])
 
   return {
     group: stored ? { code: stored.code, name: stored.name } : null,
@@ -243,6 +315,8 @@ export function useGroup(favorites: Set<string>) {
     join,
     leave,
     friendsByEvent,
+    myEventId,
+    checkIn,
   }
 }
 
