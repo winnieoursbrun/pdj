@@ -165,17 +165,26 @@ describe('eventEndDate', () => {
 describe('isEventOngoing', () => {
   const event = makeEvent({ day: 'sam', start: '21:00', end: '22:30' })
 
-  it('est vrai entre le début (inclus) et la fin (exclue)', () => {
+  it('est vrai pendant l’événement', () => {
     expect(isEventOngoing(event, new Date(2026, 6, 18, 21, 0).getTime())).toBe(true)
     expect(isEventOngoing(event, new Date(2026, 6, 18, 22, 0).getTime())).toBe(true)
-    expect(isEventOngoing(event, new Date(2026, 6, 18, 20, 59).getTime())).toBe(false)
-    expect(isEventOngoing(event, new Date(2026, 6, 18, 22, 30).getTime())).toBe(false)
   })
 
-  it('donne une fenêtre d’une heure aux événements sans horaire de fin', () => {
+  it('s’active 15 minutes avant le début', () => {
+    expect(isEventOngoing(event, new Date(2026, 6, 18, 20, 45).getTime())).toBe(true)
+    expect(isEventOngoing(event, new Date(2026, 6, 18, 20, 44).getTime())).toBe(false)
+  })
+
+  it('reste actif 15 minutes après la fin', () => {
+    expect(isEventOngoing(event, new Date(2026, 6, 18, 22, 44).getTime())).toBe(true)
+    expect(isEventOngoing(event, new Date(2026, 6, 18, 22, 45).getTime())).toBe(false)
+  })
+
+  it('donne une fenêtre d’une heure (plus la marge) aux événements sans horaire de fin', () => {
     const openEnded = makeEvent({ day: 'sam', start: '23:00', end: null })
     expect(isEventOngoing(openEnded, new Date(2026, 6, 18, 23, 30).getTime())).toBe(true)
-    expect(isEventOngoing(openEnded, new Date(2026, 6, 19, 0, 30).getTime())).toBe(false)
+    expect(isEventOngoing(openEnded, new Date(2026, 6, 19, 0, 14).getTime())).toBe(true)
+    expect(isEventOngoing(openEnded, new Date(2026, 6, 19, 0, 15).getTime())).toBe(false)
   })
 
   it('suit la bascule après minuit du jour de grille', () => {
