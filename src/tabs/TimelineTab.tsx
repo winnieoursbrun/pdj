@@ -1,11 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Day, FestEvent } from '../types'
-import { byTime, DAY_LONG, DAYS, eventEndDate, formatRange, isAllDay } from '../lib/schedule'
+import {
+  byTime,
+  DAY_LONG,
+  DAYS,
+  eventEndDate,
+  formatRange,
+  isAllDay,
+  isEventOngoing,
+} from '../lib/schedule'
 import { UmbrellaButton } from '../components/Umbrella'
 import { ReminderBanner } from '../components/ReminderBanner'
 import { GroupPanel } from '../components/GroupPanel'
+import { FriendChips, PresenceButton } from '../components/GroupBadges'
 import type { ReminderStatus } from '../hooks/useReminders'
 import type { GroupApi } from '../hooks/useGroup'
+import { useNow } from '../hooks/useNow'
 import eventsData from '../data/events.json'
 
 const events = eventsData as FestEvent[]
@@ -35,6 +45,7 @@ export function TimelineTab({
   scrollToken,
 }: TimelineTabProps) {
   const [showFriends, setShowFriends] = useState(loadShowFriends)
+  const now = useNow()
 
   const toggleShowFriends = () =>
     setShowFriends((prev) => {
@@ -116,7 +127,9 @@ export function TimelineTab({
           <ol className="tl-list">
             {group.items.map((e) => {
               const isMine = favorites.has(e.id)
-              const friendNames = groupApi.friendsByEvent.get(e.id) ?? []
+              const friends = groupApi.friendsByEvent.get(e.id) ?? []
+              const canCheckIn = groupApi.group !== null && isEventOngoing(e, now)
+              const isHere = groupApi.myEventId === e.id
               return (
                 <li
                   key={e.id}
@@ -135,15 +148,16 @@ export function TimelineTab({
                     <h3 className="card-title">{e.title}</h3>
                     {e.artist && <p className="card-artist">{e.artist}</p>}
                     <p className="card-venue">{e.venue}</p>
-                    {friendNames.length > 0 && (
+                    {(friends.length > 0 || canCheckIn) && (
                       <div className="card-group-row">
-                        <span className="friend-chips">
-                          {friendNames.map((n) => (
-                            <span key={n} className="friend-chip">
-                              {n}
-                            </span>
-                          ))}
-                        </span>
+                        {canCheckIn && (
+                          <PresenceButton
+                            here={isHere}
+                            eventTitle={e.title}
+                            onToggle={() => groupApi.checkIn(isHere ? null : e.id)}
+                          />
+                        )}
+                        {friends.length > 0 && <FriendChips friends={friends} />}
                       </div>
                     )}
                   </div>

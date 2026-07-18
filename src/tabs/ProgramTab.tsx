@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import type { Category, Day, FestEvent } from '../types'
-import { byTime, CATEGORIES, DAYS } from '../lib/schedule'
+import { byTime, CATEGORIES, DAYS, isEventOngoing } from '../lib/schedule'
 import { describeWeatherCode } from '../lib/weather'
 import { useWeather } from '../hooks/useWeather'
+import { useNow } from '../hooks/useNow'
 import { EventCard } from '../components/EventCard'
+import type { GroupApi } from '../hooks/useGroup'
 import eventsData from '../data/events.json'
 
 const events = eventsData as FestEvent[]
@@ -18,13 +20,14 @@ function loadStoredDay(): Day {
 interface ProgramTabProps {
   favorites: Set<string>
   onToggleFavorite: (id: string) => void
-  friendsByEvent: Map<string, string[]>
+  groupApi: GroupApi
 }
 
-export function ProgramTab({ favorites, onToggleFavorite, friendsByEvent }: ProgramTabProps) {
+export function ProgramTab({ favorites, onToggleFavorite, groupApi }: ProgramTabProps) {
   const [day, setDay] = useState<Day>(loadStoredDay)
   const [category, setCategory] = useState<Category | 'all'>('all')
   const { days: weatherDays } = useWeather()
+  const now = useNow()
 
   function selectDay(d: Day) {
     setDay(d)
@@ -91,15 +94,26 @@ export function ProgramTab({ favorites, onToggleFavorite, friendsByEvent }: Prog
       </p>
 
       <div className="card-list">
-        {list.map((e) => (
-          <EventCard
-            key={e.id}
-            event={e}
-            isFavorite={favorites.has(e.id)}
-            onToggleFavorite={onToggleFavorite}
-            friends={friendsByEvent.get(e.id)}
-          />
-        ))}
+        {list.map((e) => {
+          const isHere = groupApi.myEventId === e.id
+          return (
+            <EventCard
+              key={e.id}
+              event={e}
+              isFavorite={favorites.has(e.id)}
+              onToggleFavorite={onToggleFavorite}
+              friends={groupApi.friendsByEvent.get(e.id)}
+              presence={
+                groupApi.group !== null && isEventOngoing(e, now)
+                  ? {
+                      here: isHere,
+                      onToggle: () => groupApi.checkIn(isHere ? null : e.id),
+                    }
+                  : null
+              }
+            />
+          )
+        })}
       </div>
     </section>
   )

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { TimelineTab } from './TimelineTab'
-import type { GroupApi } from '../hooks/useGroup'
+import type { FriendPresence, GroupApi } from '../hooks/useGroup'
 import type { FestEvent } from '../types'
 import eventsData from '../data/events.json'
 
@@ -20,10 +20,15 @@ function fakeGroupApi(overrides: Partial<GroupApi> = {}): GroupApi {
     create: vi.fn(() => 'PLUIE-42'),
     join: vi.fn(),
     leave: vi.fn(),
-    friendsByEvent: new Map<string, string[]>(),
+    friendsByEvent: new Map<string, FriendPresence[]>(),
+    myEventId: null,
+    checkIn: vi.fn(),
     ...overrides,
   } as GroupApi
 }
+
+const chips = (names: string[], here = false) =>
+  names.map((name) => ({ name, here }))
 
 function renderTab(overrides: Partial<Parameters<typeof TimelineTab>[0]> = {}) {
   const onToggleFavorite = vi.fn()
@@ -85,7 +90,7 @@ describe('TimelineTab — rendu', () => {
 })
 
 describe('TimelineTab — favoris des copains', () => {
-  const inGroup = (friendsByEvent: Map<string, string[]>) =>
+  const inGroup = (friendsByEvent: Map<string, FriendPresence[]>) =>
     fakeGroupApi({
       group: { code: 'PLUIE-42', name: 'Moi' },
       others: [{ name: 'Léa', favorites: [...friendsByEvent.keys()], updatedAt: 1 }],
@@ -105,7 +110,7 @@ describe('TimelineTab — favoris des copains', () => {
   it('fusionne les favoris des amis dans la timeline avec leur chip', () => {
     renderTab({
       favorites: new Set([LARZAC]),
-      groupApi: inGroup(new Map([[MIOSSEC, ['Léa']]])),
+      groupApi: inGroup(new Map([[MIOSSEC, chips(['Léa'])]])),
     })
 
     const friendItem = screen.getByRole('heading', { name: 'MIOSSEC' }).closest('li')
@@ -117,7 +122,7 @@ describe('TimelineTab — favoris des copains', () => {
     localStorage.setItem('pdj26-show-friends-favorites', 'false')
     renderTab({
       favorites: new Set([LARZAC]),
-      groupApi: inGroup(new Map([[MIOSSEC, ['Léa']]])),
+      groupApi: inGroup(new Map([[MIOSSEC, chips(['Léa'])]])),
     })
     expect(screen.queryByRole('heading', { name: 'MIOSSEC' })).not.toBeInTheDocument()
   })
@@ -126,7 +131,7 @@ describe('TimelineTab — favoris des copains', () => {
     localStorage.setItem('pdj26-show-friends-favorites', 'n-importe-quoi')
     renderTab({
       favorites: new Set(),
-      groupApi: inGroup(new Map([[MIOSSEC, ['Léa']]])),
+      groupApi: inGroup(new Map([[MIOSSEC, chips(['Léa'])]])),
     })
     expect(screen.getByRole('heading', { name: 'MIOSSEC' })).toBeInTheDocument()
   })
@@ -134,7 +139,7 @@ describe('TimelineTab — favoris des copains', () => {
   it('ne marque pas comme « ami » un événement qui est aussi mon favori', () => {
     renderTab({
       favorites: new Set([MIOSSEC]),
-      groupApi: inGroup(new Map([[MIOSSEC, ['Léa']]])),
+      groupApi: inGroup(new Map([[MIOSSEC, chips(['Léa'])]])),
     })
     const item = screen.getByRole('heading', { name: 'MIOSSEC' }).closest('li')
     expect(item).not.toHaveClass('tl-item-friend')
@@ -144,9 +149,70 @@ describe('TimelineTab — favoris des copains', () => {
   it('ignore les favoris des amis hors groupe', () => {
     renderTab({
       favorites: new Set(),
-      groupApi: fakeGroupApi({ friendsByEvent: new Map([[MIOSSEC, ['Léa']]]) }),
+      groupApi: fakeGroupApi({ friendsByEvent: new Map([[MIOSSEC, chips(['Léa'])]]) }),
     })
     expect(screen.getByText('Ta timeline est vide')).toBeInTheDocument()
+  })
+})
+
+describe('TimelineTab — présence « j’y suis »', () => {
+  const inGroup = (overrides: Partial<GroupApi> = {}) =>
+    fakeGroupApi({ group: { code: 'PLUIE-42', name: 'Moi' }, ...overrides })
+
+  beforeEach(() => {
+    localStorage.clear()
+    vi.useFakeTimers({ toFake: ['Date'] })
+    // Vendredi 22h00 : MIOSSEC (21:35 – 22:35) est en cours.
+    vi.setSystemTime(new Date(2026, 6, 17, 22, 0))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('propose « J’y suis » sur un événement en cours quand on est en groupe', () => {
+    const groupApi = inGroup()
+    renderTab({ favorites: new Set([LARZAC, MIOSSEC]), groupApi })
+
+    const btn = screen.getByRole('button', {
+      name: 'Dire à mon groupe que je suis à « MIOSSEC »',
+    })
+    expect(btn).toHaveAttribute('aria-pressed', 'false')
+    fireEvent.click(btn)
+    expect(groupApi.checkIn).toHaveBeenCalledWith(MIOSSEC)
+
+    // LARZAC ! est terminé depuis 18h30 : pas de bouton de présence.
+    const larzacItem = screen.getByRole('heading', { name: 'LARZAC !' }).closest('li')
+    expect(within(larzacItem!).queryByRole('button', { name: /je suis à/ })).toBeNull()
+  })
+
+  it('affiche « Tu y es » et se désactive au clic quand j’y suis déjà', () => {
+    const groupApi = inGroup({ myEventId: MIOSSEC })
+    renderTab({ favorites: new Set([MIOSSEC]), groupApi })
+
+    const btn = screen.getByRole('button', {
+      name: 'Ne plus signaler ma présence à « MIOSSEC »',
+    })
+    expect(btn).toHaveAttribute('aria-pressed', 'true')
+    expect(btn).toHaveTextContent('Tu y es')
+    fireEvent.click(btn)
+    expect(groupApi.checkIn).toHaveBeenCalledWith(null)
+  })
+
+  it('ne propose pas la présence hors groupe', () => {
+    renderTab({ favorites: new Set([MIOSSEC]), groupApi: fakeGroupApi() })
+    expect(screen.queryByRole('button', { name: /je suis à/ })).toBeNull()
+  })
+
+  it('met en avant la pastille d’un ami présent sur l’événement', () => {
+    const groupApi = inGroup({
+      friendsByEvent: new Map([[MIOSSEC, [...chips(['Léa'], true), ...chips(['Max'])]]]),
+    })
+    renderTab({ favorites: new Set([MIOSSEC]), groupApi })
+
+    expect(screen.getByText('Léa')).toHaveClass('friend-chip-here')
+    expect(screen.getByText('Max')).toHaveClass('friend-chip')
+    expect(screen.getByText('Max')).not.toHaveClass('friend-chip-here')
   })
 })
 

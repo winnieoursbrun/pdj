@@ -40,6 +40,8 @@ export interface MemberState {
   name: string
   favorites: string[]
   updatedAt: number
+  /** Id de l'événement où le membre se trouve en ce moment (un seul à la fois). */
+  at?: string
   /** Tombstone publié au moment de quitter le groupe : les autres membres le purgent de leur liste. */
   left?: boolean
 }
@@ -138,6 +140,7 @@ function isMemberState(value: unknown): value is MemberState {
     typeof v.updatedAt === 'number' &&
     Array.isArray(v.favorites) &&
     v.favorites.every((id) => typeof id === 'string') &&
+    (v.at === undefined || typeof v.at === 'string') &&
     (v.left === undefined || typeof v.left === 'boolean')
   )
 }

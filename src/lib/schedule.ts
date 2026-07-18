@@ -63,6 +63,17 @@ export function eventStartDate(e: FestEvent): Date {
   return new Date(2026, 6, date, hours, minutes)
 }
 
+// Fenêtre de présence par défaut pour les événements sans horaire de fin publié.
+const DEFAULT_ONGOING_MS = 60 * 60_000
+
+// Un événement est « en cours » entre son début et sa fin (ou début + 1 h sans
+// horaire de fin) : fenêtre pendant laquelle on peut dire au groupe qu'on y est.
+export function isEventOngoing(e: FestEvent, now: number): boolean {
+  const start = eventStartDate(e).getTime()
+  const end = e.end ? eventEndDate(e).getTime() : start + DEFAULT_ONGOING_MS
+  return now >= start && now < end
+}
+
 // Les animations « en continu » (stands du village, espace familles…) couvrent
 // toute la journée : elles ne doivent pas capter le scroll vers l'événement en cours.
 const ALL_DAY_MS = 6 * 60 * 60 * 1000

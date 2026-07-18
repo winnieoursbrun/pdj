@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { byTime, eventEndDate, eventStartDate, formatRange, isAllDay, timeMinutes } from './schedule'
+import {
+  byTime,
+  eventEndDate,
+  eventStartDate,
+  formatRange,
+  isAllDay,
+  isEventOngoing,
+  timeMinutes,
+} from './schedule'
 import type { Day, FestEvent } from '../types'
 
 function makeEvent(overrides: Partial<FestEvent>): FestEvent {
@@ -151,5 +159,28 @@ describe('eventEndDate', () => {
     expect(end.getDate()).toBe(18)
     expect(end.getHours()).toBe(1)
     expect(end.getMinutes()).toBe(40)
+  })
+})
+
+describe('isEventOngoing', () => {
+  const event = makeEvent({ day: 'sam', start: '21:00', end: '22:30' })
+
+  it('est vrai entre le début (inclus) et la fin (exclue)', () => {
+    expect(isEventOngoing(event, new Date(2026, 6, 18, 21, 0).getTime())).toBe(true)
+    expect(isEventOngoing(event, new Date(2026, 6, 18, 22, 0).getTime())).toBe(true)
+    expect(isEventOngoing(event, new Date(2026, 6, 18, 20, 59).getTime())).toBe(false)
+    expect(isEventOngoing(event, new Date(2026, 6, 18, 22, 30).getTime())).toBe(false)
+  })
+
+  it('donne une fenêtre d’une heure aux événements sans horaire de fin', () => {
+    const openEnded = makeEvent({ day: 'sam', start: '23:00', end: null })
+    expect(isEventOngoing(openEnded, new Date(2026, 6, 18, 23, 30).getTime())).toBe(true)
+    expect(isEventOngoing(openEnded, new Date(2026, 6, 19, 0, 30).getTime())).toBe(false)
+  })
+
+  it('suit la bascule après minuit du jour de grille', () => {
+    const night = makeEvent({ day: 'ven', start: '00:40', end: '01:40' })
+    expect(isEventOngoing(night, new Date(2026, 6, 18, 1, 0).getTime())).toBe(true)
+    expect(isEventOngoing(night, new Date(2026, 6, 17, 1, 0).getTime())).toBe(false)
   })
 })

@@ -84,4 +84,18 @@ describe('encryptState / decryptState', () => {
     const payload = await encryptState(key, malformed as unknown as MemberState)
     expect(await decryptState(key, payload)).toBeNull()
   })
+
+  it('conserve la présence at au roundtrip', async () => {
+    const { key } = await deriveGroupKeys('AVERSE-42')
+    const withPresence: MemberState = { ...SAMPLE, at: 'miossec-ven-2135' }
+    const payload = await encryptState(key, withPresence)
+    expect(await decryptState(key, payload)).toEqual(withPresence)
+  })
+
+  it('rend null si at a un type invalide', async () => {
+    const { key } = await deriveGroupKeys('AVERSE-42')
+    const malformed = { name: 'Max', favorites: [], updatedAt: 2000, at: 42 }
+    const payload = await encryptState(key, malformed as unknown as MemberState)
+    expect(await decryptState(key, payload)).toBeNull()
+  })
 })
