@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { eventStartDate } from './schedule'
-import type { FestEvent } from '../types'
+import { byTime, eventEndDate, eventStartDate, formatRange, timeMinutes } from './schedule'
+import type { Day, FestEvent } from '../types'
 
 function makeEvent(overrides: Partial<FestEvent>): FestEvent {
   return {
@@ -17,6 +17,54 @@ function makeEvent(overrides: Partial<FestEvent>): FestEvent {
     ...overrides,
   }
 }
+
+describe('timeMinutes', () => {
+  it('convertit une heure de journée en minutes', () => {
+    expect(timeMinutes('21:30')).toBe(21 * 60 + 30)
+  })
+
+  it('décale les heures après minuit pour les trier en fin de nuit', () => {
+    expect(timeMinutes('00:30')).toBe(24 * 60 + 30)
+    expect(timeMinutes('04:59')).toBe(28 * 60 + 59)
+  })
+
+  it('ne décale pas la frontière de 05:00', () => {
+    expect(timeMinutes('05:00')).toBe(5 * 60)
+  })
+})
+
+describe('byTime', () => {
+  const at = (day: Day, start: string) => makeEvent({ day, start })
+
+  it('trie par heure au sein du même jour', () => {
+    const sorted = [at('sam', '21:00'), at('sam', '10:30')].sort(byTime)
+    expect(sorted.map((e) => e.start)).toEqual(['10:30', '21:00'])
+  })
+
+  it("trie un créneau après minuit en fin de son jour de grille, avant le jour suivant", () => {
+    const sorted = [at('sam', '10:00'), at('ven', '01:00'), at('ven', '23:30')].sort(byTime)
+    expect(sorted.map((e) => `${e.day} ${e.start}`)).toEqual([
+      'ven 23:30',
+      'ven 01:00',
+      'sam 10:00',
+    ])
+  })
+
+  it('trie les jours dans l’ordre ven < sam < dim', () => {
+    const sorted = [at('dim', '10:00'), at('ven', '22:00'), at('sam', '15:00')].sort(byTime)
+    expect(sorted.map((e) => e.day)).toEqual(['ven', 'sam', 'dim'])
+  })
+})
+
+describe('formatRange', () => {
+  it('formate début et fin avec des « h »', () => {
+    expect(formatRange(makeEvent({ start: '21:00', end: '22:30' }))).toBe('21h00 – 22h30')
+  })
+
+  it('ne montre que le début quand il n’y a pas de fin', () => {
+    expect(formatRange(makeEvent({ start: '21:00', end: null }))).toBe('21h00')
+  })
+})
 
 describe('eventStartDate', () => {
   it('retourne la date calendaire du jour de grille pour un créneau normal', () => {
@@ -37,5 +85,45 @@ describe('eventStartDate', () => {
     expect(result.getDate()).toBe(18) // nuit de vendredi 17 -> samedi 18
     expect(result.getHours()).toBe(0)
     expect(result.getMinutes()).toBe(40)
+  })
+
+  it('lève une erreur pour un jour inconnu', () => {
+    const event = makeEvent({ day: 'lun' as Day })
+    expect(() => eventStartDate(event)).toThrow('Unknown day: lun')
+  })
+})
+
+describe('eventEndDate', () => {
+  it('retourne la fin le même jour pour un créneau normal', () => {
+    const end = eventEndDate(makeEvent({ day: 'sam', start: '21:00', end: '22:30' }))
+    expect(end.getDate()).toBe(18)
+    expect(end.getHours()).toBe(22)
+    expect(end.getMinutes()).toBe(30)
+  })
+
+  it('retourne la date de début quand il n’y a pas de fin', () => {
+    const event = makeEvent({ day: 'sam', start: '21:00', end: null })
+    expect(eventEndDate(event).getTime()).toBe(eventStartDate(event).getTime())
+  })
+
+  it('ajoute un jour quand la fin déborde après minuit', () => {
+    const end = eventEndDate(makeEvent({ day: 'ven', start: '23:00', end: '01:00' }))
+    expect(end.getDate()).toBe(18) // nuit de vendredi 17 -> samedi 18
+    expect(end.getHours()).toBe(1)
+  })
+
+  it('ajoute un jour quand la fin est égale au début', () => {
+    const end = eventEndDate(makeEvent({ day: 'ven', start: '21:00', end: '21:00' }))
+    expect(end.getDate()).toBe(18)
+  })
+
+  it('garde début et fin le lendemain calendaire pour un créneau démarrant après minuit', () => {
+    const event = makeEvent({ day: 'ven', start: '00:40', end: '01:40' })
+    const start = eventStartDate(event)
+    const end = eventEndDate(event)
+    expect(start.getDate()).toBe(18)
+    expect(end.getDate()).toBe(18)
+    expect(end.getHours()).toBe(1)
+    expect(end.getMinutes()).toBe(40)
   })
 })
