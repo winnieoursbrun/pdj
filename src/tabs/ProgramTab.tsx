@@ -8,6 +8,13 @@ import eventsData from '../data/events.json'
 
 const events = eventsData as FestEvent[]
 
+const DAY_STORAGE_KEY = 'pdj26-program-day'
+
+function loadStoredDay(): Day {
+  const stored = localStorage.getItem(DAY_STORAGE_KEY)
+  return DAYS.some((d) => d.key === stored) ? (stored as Day) : 'ven'
+}
+
 interface ProgramTabProps {
   favorites: Set<string>
   onToggleFavorite: (id: string) => void
@@ -15,9 +22,14 @@ interface ProgramTabProps {
 }
 
 export function ProgramTab({ favorites, onToggleFavorite, friendsByEvent }: ProgramTabProps) {
-  const [day, setDay] = useState<Day>('ven')
+  const [day, setDay] = useState<Day>(loadStoredDay)
   const [category, setCategory] = useState<Category | 'all'>('all')
   const { days: weatherDays } = useWeather()
+
+  function selectDay(d: Day) {
+    setDay(d)
+    localStorage.setItem(DAY_STORAGE_KEY, d)
+  }
 
   const list = events
     .filter((e) => e.day === day && (category === 'all' || e.category === category))
@@ -36,7 +48,7 @@ export function ProgramTab({ favorites, onToggleFavorite, friendsByEvent }: Prog
               role="tab"
               aria-selected={day === d.key}
               className={`day-btn day-${d.key}${day === d.key ? ' is-active' : ''}`}
-              onClick={() => setDay(d.key)}
+              onClick={() => selectDay(d.key)}
             >
               <span className="day-name">{d.label}</span>
               <span className="day-date">{d.date}</span>
