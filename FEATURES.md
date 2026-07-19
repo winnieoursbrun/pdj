@@ -204,6 +204,31 @@ pendant) l'événement :
 - Limite : ne fonctionne que si l'app est ouverte/au premier plan au moment de la détection —
   vraie solution avec le point suivant.
 
+### Bureau des cœurs (rencontres façon Tinder)
+
+Une partie « Bureau des cœurs » : matching entre festivalier·ères, à la Tinder.
+
+- **Principe** : chacun·e crée un mini-profil local (pseudo, photo ou avatar, phrase
+  d'accroche, éventuellement ses favoris comme centres d'intérêt musicaux), puis on
+  découvre les profils des autres et on like/passe ; un **match** (like réciproque) ouvre
+  un moyen de se retrouver sur le site.
+- **Piste sans backend** (cohérente avec le reste de l'app) : réutiliser l'infra Nostr des
+  groupes — un tag public « bureau des cœurs » du festival où chacun publie son profil
+  (event remplaçable), les likes chiffrés vers la clé publique du profil visé pour que seul
+  l'intéressé·e puisse les lire ; un match se détecte localement quand les deux likes se
+  croisent. Chat de match en messages chiffrés (NIP-04/NIP-17) ou simple point de
+  rendez-vous proposé (« retrouvons-nous au point X à HH:MM », en s'appuyant sur les lieux
+  de `venues.json`).
+- **Affinités musicales** : score de compatibilité calculé sur l'intersection des favoris
+  (« vous avez 8 concerts en commun ») — les données existent déjà.
+- **Points d'attention** : modération quasi impossible sans serveur (profils publics =
+  contenu non contrôlé), signalement/blocage local a minima, majorité/consentement,
+  visibilité limitée à la durée du festival (expiration des events), et surtout la vie
+  privée — contrairement aux groupes, un profil publié est lisible par n'importe qui sur
+  les relais : bien le dire à l'utilisateur, n'y mettre que ce qu'il choisit. Si ces
+  limites sont bloquantes, c'est le candidat idéal pour un premier vrai backend (voir
+  § suivant).
+
 ### Backend de notifications (push serveur)
 
 Sortir les notifications du modèle « l'app doit tourner » :
