@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import * as Sentry from '@sentry/react'
+import { NOTIFICATIONS_ENABLED_KEY } from '../lib/notifications'
 import { eventStartDate } from '../lib/schedule'
 import type { FestEvent } from '../types'
 
 export type ReminderStatus = 'unsupported' | 'default' | 'denied' | 'enabled' | 'disabled'
 
-const ENABLED_KEY = 'pdj26-reminders-enabled'
+const ENABLED_KEY = NOTIFICATIONS_ENABLED_KEY
 const NOTIFIED_KEY = 'pdj26-reminders-notified'
 const REMINDER_LEAD_MS = 15 * 60 * 1000
 
@@ -41,7 +42,7 @@ function fireReminder(event: FestEvent) {
 
 function fireEnabledConfirmation() {
   const notification = new Notification('Rappels activés', {
-    body: 'Tu seras prévenu·e 15 min avant chaque événement de ta timeline.',
+    body: 'Tu seras prévenu·e 15 min avant chaque événement de ta timeline, et quand un copain de ton groupe signale « J’y suis ».',
   })
   notification.onclick = () => window.focus()
 }

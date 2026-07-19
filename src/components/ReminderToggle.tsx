@@ -20,7 +20,10 @@ export function ReminderToggle({ status, enable, disable }: ReminderToggleProps)
 
   return (
     <div className="toggle-row">
-      <span>Rappel 15 min avant chaque événement de ma timeline</span>
+      <span>
+        Rappel 15 min avant chaque événement de ma timeline, et alerte quand un copain de mon
+        groupe signale « J'y suis »
+      </span>
       <button
         type="button"
         role="switch"

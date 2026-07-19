@@ -339,3 +339,89 @@ describe('useGroup — présence « j’y suis »', () => {
     expect(localStorage.getItem('pdj26-group-at')).toBeNull()
   })
 })
+
+describe('useGroup — notification de présence en arrière-plan', () => {
+  class MockNotification {
+    static permission: NotificationPermission = 'granted'
+    static instances: MockNotification[] = []
+    onclick: (() => void) | null = null
+    title: string
+
+    constructor(title: string) {
+      this.title = title
+      MockNotification.instances.push(this)
+    }
+  }
+
+  function setVisibilityState(value: DocumentVisibilityState) {
+    Object.defineProperty(document, 'visibilityState', {
+      value,
+      configurable: true,
+    })
+  }
+
+  beforeEach(() => {
+    localStorage.clear()
+    subscriptions.length = 0
+    vi.clearAllMocks()
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(DURING_BOTH)
+    localStorage.setItem('pdj26-reminders-enabled', 'true')
+    MockNotification.permission = 'granted'
+    MockNotification.instances = []
+    vi.stubGlobal('Notification', MockNotification)
+    setVisibilityState('hidden')
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    setVisibilityState('visible')
+    vi.useRealTimers()
+  })
+
+  it('notifie quand un copain signale « j’y suis » et que l’appli est en arrière-plan', async () => {
+    const { result } = renderHook(() => useGroup(new Set()))
+    let code = ''
+    act(() => {
+      code = result.current.create('Léa')
+    })
+    await waitFor(() => expect(subscriptions.length).toBeGreaterThan(0))
+
+    await sendFromFriend(code, 'friend-pk', makeState({ at: LARZAC }))
+    await waitFor(() => expect(result.current.others).toHaveLength(1))
+    expect(MockNotification.instances).toHaveLength(1)
+    expect(MockNotification.instances[0].title).toContain('Max')
+
+    // Le relais rejoue le même état : pas de doublon.
+    await sendFromFriend(code, 'friend-pk', makeState({ at: LARZAC, updatedAt: 2000 }))
+    await new Promise((r) => setTimeout(r, 50))
+    expect(MockNotification.instances).toHaveLength(1)
+  })
+
+  it('ne notifie pas mon propre état renvoyé par le relais', async () => {
+    const { result } = renderHook(() => useGroup(new Set()))
+    let code = ''
+    act(() => {
+      code = result.current.create('Léa')
+    })
+    await waitFor(() => expect(subscriptions.length).toBeGreaterThan(0))
+
+    await sendFromFriend(code, 'my-pubkey', makeState({ name: 'Léa', at: LARZAC }))
+    await new Promise((r) => setTimeout(r, 50))
+    expect(MockNotification.instances).toHaveLength(0)
+  })
+
+  it('ne notifie pas quand l’appli est au premier plan', async () => {
+    setVisibilityState('visible')
+    const { result } = renderHook(() => useGroup(new Set()))
+    let code = ''
+    act(() => {
+      code = result.current.create('Léa')
+    })
+    await waitFor(() => expect(subscriptions.length).toBeGreaterThan(0))
+
+    await sendFromFriend(code, 'friend-pk', makeState({ at: LARZAC }))
+    await waitFor(() => expect(result.current.others).toHaveLength(1))
+    expect(MockNotification.instances).toHaveLength(0)
+  })
+})

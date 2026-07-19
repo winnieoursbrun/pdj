@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as Sentry from '@sentry/react'
 import {
   decryptState,
@@ -16,6 +16,7 @@ import {
   skToHex,
   subscribeGroup,
 } from '../lib/nostr'
+import { notifyFriendPresence, resetNotifiedPresences } from '../lib/presenceNotifications'
 import { isEventOngoing } from '../lib/schedule'
 import type { FestEvent } from '../types'
 import eventsData from '../data/events.json'
@@ -102,6 +103,10 @@ function loadMembers(): Record<string, MemberState> {
 export function useGroup(favorites: Set<string>) {
   const [stored, setStored] = useState<StoredGroup | null>(loadStored)
   const [members, setMembers] = useState<Record<string, MemberState>>(loadMembers)
+  // Miroir synchrone du cache des membres : permet, à la réception d'un état,
+  // de comparer avec l'ancien (détection d'un nouveau « j'y suis ») sans
+  // dépendre du cycle de rendu React.
+  const membersRef = useRef(members)
   const [syncTick, setSyncTick] = useState(0)
   const [myEventId, setMyEventId] = useState<string | null>(loadMyEventId)
   const [presenceTick, setPresenceTick] = useState(0)
@@ -147,20 +152,24 @@ export function useGroup(favorites: Set<string>) {
           if (!state || cancelled) {
             return
           }
-          setMembers((prev) => {
-            const existing = prev[pubkey]
-            if (existing && existing.updatedAt >= state.updatedAt) {
-              return prev
-            }
-            const next = { ...prev }
-            if (state.left) {
-              delete next[pubkey]
-            } else {
-              next[pubkey] = state
-            }
-            localStorage.setItem(MEMBERS_KEY, JSON.stringify(next))
-            return next
-          })
+          const existing = membersRef.current[pubkey]
+          if (existing && existing.updatedAt >= state.updatedAt) {
+            return
+          }
+          // Un copain (jamais mon propre état renvoyé par le relais) vient de
+          // signaler « j'y suis » : notification si l'appli est en arrière-plan.
+          if (pubkey !== myPubkey) {
+            notifyFriendPresence(pubkey, existing, state)
+          }
+          const next = { ...membersRef.current }
+          if (state.left) {
+            delete next[pubkey]
+          } else {
+            next[pubkey] = state
+          }
+          localStorage.setItem(MEMBERS_KEY, JSON.stringify(next))
+          membersRef.current = next
+          setMembers(next)
         })
       })
     })
@@ -168,7 +177,7 @@ export function useGroup(favorites: Set<string>) {
       cancelled = true
       unsubscribe?.()
     }
-  }, [stored, syncTick])
+  }, [stored, myPubkey, syncTick])
 
   // Publication débouncée de mon propre état.
   useEffect(() => {
@@ -226,6 +235,8 @@ export function useGroup(favorites: Set<string>) {
     localStorage.setItem(GROUP_KEY, JSON.stringify(next))
     localStorage.removeItem(MEMBERS_KEY)
     localStorage.removeItem(AT_KEY)
+    resetNotifiedPresences()
+    membersRef.current = {}
     setMembers({})
     setMyEventId(null)
     setStored(next)
@@ -268,6 +279,8 @@ export function useGroup(favorites: Set<string>) {
     localStorage.removeItem(GROUP_KEY)
     localStorage.removeItem(MEMBERS_KEY)
     localStorage.removeItem(AT_KEY)
+    resetNotifiedPresences()
+    membersRef.current = {}
     setStored(null)
     setMembers({})
     setMyEventId(null)
