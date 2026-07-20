@@ -1476,6 +1476,195 @@ p {
   height: auto;
 }
 
+.recap-theme-pink {
+  --recap-bg: var(--pink);
+  --recap-ink: #141414;
+  --recap-track: rgba(20, 20, 20, 0.18);
+}
+.recap-theme-yellow {
+  --recap-bg: var(--yellow);
+  --recap-ink: #141414;
+  --recap-track: rgba(20, 20, 20, 0.18);
+}
+.recap-theme-sky {
+  --recap-bg: var(--sky);
+  --recap-ink: #141414;
+  --recap-track: rgba(20, 20, 20, 0.18);
+}
+.recap-theme-green {
+  --recap-bg: var(--green);
+  --recap-ink: #141414;
+  --recap-track: rgba(20, 20, 20, 0.18);
+}
+.recap-theme-peri {
+  --recap-bg: var(--peri);
+  --recap-ink: var(--on-dark);
+  --recap-track: rgba(251, 248, 240, 0.3);
+}
+.recap-theme-violet {
+  --recap-bg: var(--violet);
+  --recap-ink: var(--on-dark);
+  --recap-track: rgba(251, 248, 240, 0.3);
+}
+.recap-theme-poppy {
+  --recap-bg: var(--poppy);
+  --recap-ink: var(--on-dark);
+  --recap-track: rgba(251, 248, 240, 0.3);
+}
+
+.recap-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--recap-bg);
+  color: var(--recap-ink);
+  transition: background-color 0.4s ease;
+}
+
+.recap-progress {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  gap: 6px;
+  padding: 16px 16px 0;
+}
+
+.recap-progress-seg {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--recap-track);
+}
+
+.recap-progress-seg.is-done {
+  background: var(--recap-ink);
+}
+
+.recap-close {
+  position: absolute;
+  z-index: 3;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--recap-ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--recap-ink);
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.recap-slide {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  pointer-events: none;
+}
+
+.recap-panel {
+  margin: auto;
+  max-width: 320px;
+  padding: 0 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  animation: recap-slide-in 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+@keyframes recap-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.recap-eyebrow {
+  font-family: var(--display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.recap-headline {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 2rem;
+  line-height: 1.1;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.recap-number {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 5.5rem;
+  line-height: 1;
+  margin: 0;
+}
+
+.recap-body {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.recap-hint {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.75;
+  margin: 4px 0 0;
+}
+
+.recap-summary-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.recap-tap-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  width: 35%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.recap-tap-prev {
+  left: 0;
+}
+
+.recap-tap-prev:disabled {
+  cursor: default;
+}
+
+.recap-tap-next {
+  left: 35%;
+  width: 65%;
+}
+
 /* Pastilles des copains qui ont mis un événement en favori */
 .card-group-row {
   display: flex;
