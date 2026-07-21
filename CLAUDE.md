@@ -1,8 +1,8 @@
-# FDH26 — Fête de l'Humain
+# FDH26 — Fête de l'Humanité (non officiel)
 
-PWA mobile-only (React + Vite + TS), fork de l'app PDJ26 (Les Pluies de Juillet) adapté pour la **Fête de l'Humain** — un événement fictif librement inspiré de la Fête de l'Humanité 2026 (91ᵉ édition, 11–13 septembre 2026, Base aérienne 217, Le Plessis-Pâté). Reprend les mêmes features que PDJ26 : plan du site, programme, timeline de favoris avec groupes de copains, rappels de notification, mes billets, FAQ.
+PWA mobile-only (React + Vite + TS), fork de l'app PDJ26 (Les Pluies de Juillet) adapté en **application non officielle de fan** pour la Fête de l'Humanité 2026 (91ᵉ édition, 11–13 septembre 2026, Base aérienne 217, Le Plessis-Pâté). Reprend les mêmes features que PDJ26 : plan du site, programme, timeline de favoris avec groupes de copains, rappels de notification, mes billets, FAQ.
 
-⚠️ Le site officiel `fete.humanite.fr` n'a pas pu être consulté directement à la création de ce fork (proxy réseau qui bloquait le domaine) : les infos pratiques, le line-up et les actualités viennent d'articles de presse (JDS, Tsugi, MyFestival...) et peuvent être incomplètes, approximatives ou datées — à recouper avec le site officiel avant toute mise à jour. Le plan du site (`public/map.svg`) est un **schéma original indicatif**, pas une reproduction du plan officiel (qu'on n'a pas).
+⚠️ **Ni développée ni approuvée par l'organisation de la Fête de l'Humanité** — le nom du festival est repris tel quel mais ce n'est pas un produit officiel ; un rappel explicite est affiché dans la FAQ de l'app (« Cette application est-elle officielle ? »), à ne pas retirer. Le site officiel `fete.humanite.fr` n'a par ailleurs pas pu être consulté directement à la création de ce fork (proxy réseau qui bloquait le domaine) : les infos pratiques, le line-up et les actualités viennent d'articles de presse (JDS, Tsugi, MyFestival...) et peuvent être incomplètes, approximatives ou datées — à recouper avec le site officiel avant toute mise à jour. Le plan du site (`public/map.svg`) est un **schéma original indicatif**, pas une reproduction du plan officiel (qu'on n'a pas).
 
 ## Commandes
 
